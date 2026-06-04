@@ -230,6 +230,15 @@
         <input id="address" type="text" value="경기도 안산시 상록구 한양대학로 55 한양대학교 ERICA 캣타워" />
       </div>
 
+      <div class="field">
+        <label for="exportSize">다운로드 크기</label>
+        <select id="exportSize">
+          <option value="500" selected>500px</option>
+          <option value="1000">1000px</option>
+          <option value="original">원본</option>
+        </select>
+      </div>
+
       <div class="check-group">
         <div class="check-group-title">글자 굵기 설정</div>
         <div class="check-grid">
@@ -313,7 +322,7 @@
       </div>
 
       <div class="help">
-        Pretendard 적용 / 글자별 굵기 설정 / 다운로드 이벤트 추적 포함 버전.
+        Pretendard 적용 / 글자별 굵기 설정 / 다운로드 크기 선택 / 다운로드 이벤트 추적 포함 버전.
       </div>
     </div>
 
@@ -393,6 +402,7 @@
     const elEmail = document.getElementById("email");
     const elPhone = document.getElementById("phone");
     const elAddress = document.getElementById("address");
+    const elExportSize = document.getElementById("exportSize");
     const elCategory = document.getElementById("category");
     const elCharacter = document.getElementById("character");
     const elCharPreview = document.getElementById("charPreview");
@@ -716,24 +726,44 @@
       elCharScaleValue.textContent = elCharScale.value;
     }
 
-    function trackDownloadEvent() {
+    function trackDownloadEvent(exportSize) {
       if (typeof gtag !== "function") return;
 
       gtag("event", "png_download", {
         event_category: "mail_card",
         event_label: elLogoType.value,
         character: elCharacter.options[elCharacter.selectedIndex]?.textContent || "",
+        export_size: exportSize,
         name_length: elName.value.trim().length
       });
     }
 
     function downloadPNG() {
-      trackDownloadEvent();
+      const selectedSize = elExportSize.value;
+      trackDownloadEvent(selectedSize);
+
+      let outputCanvas = canvas;
+
+      if (selectedSize !== "original") {
+        const exportWidth = Number(selectedSize);
+        const exportHeight = Math.round(canvas.height * (exportWidth / canvas.width));
+
+        outputCanvas = document.createElement("canvas");
+        outputCanvas.width = exportWidth;
+        outputCanvas.height = exportHeight;
+
+        const outputCtx = outputCanvas.getContext("2d");
+        outputCtx.imageSmoothingEnabled = true;
+        outputCtx.imageSmoothingQuality = "high";
+        outputCtx.drawImage(canvas, 0, 0, exportWidth, exportHeight);
+      }
 
       const fileBase = (elName.value || "mail-card").trim().replace(/\s+/g, "_");
+      const sizeLabel = selectedSize === "original" ? "original" : `${selectedSize}px`;
+
       const link = document.createElement("a");
-      link.download = `${fileBase}_mail_card.png`;
-      link.href = canvas.toDataURL("image/png");
+      link.download = `${fileBase}_메일명함_${sizeLabel}.png`;
+      link.href = outputCanvas.toDataURL("image/png");
       link.click();
     }
 
@@ -743,9 +773,10 @@
       elName.value = "하냥이";
       elTitle.value = "귀여움";
       elTeam.value = "한양대학교 ERICA 하냥처 | 하냥팀";
-      elEmail.value = "hyangi@hanyang.ac.kr";
+      elEmail.value = "hanyangi@hanyang.ac.kr";
       elPhone.value = "031-400-9999";
-      elAddress.value = "경기도 안산시 상록구 한양대학로 55 ERICA 캣타워";
+      elAddress.value = "경기도 안산시 상록구 한양대학로 55 한양대학교 ERICA 캣타워";
+      elExportSize.value = "500";
 
       elBoldName.checked = true;
       elBoldTitle.checked = true;
