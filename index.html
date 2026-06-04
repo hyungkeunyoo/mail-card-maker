@@ -46,14 +46,15 @@
     }
 
     .panel {
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;
-}
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
 
-.preview {
-  position: sticky;
-  top: 24px;
-}
+    .preview {
+      position: sticky;
+      top: 24px;
+    }
+
     h1 { margin: 0 0 18px; font-size: 24px; }
 
     .field { margin-bottom: 14px; }
@@ -183,7 +184,7 @@
     }
 
     .help {
-      margin-top:14px;
+      margin-top:8px;
       font-size:13px;
       color:#666;
       line-height:1.55;
@@ -191,6 +192,8 @@
 
     @media (max-width:1100px) {
       .wrap { grid-template-columns: 1fr; }
+      .preview { position: static; }
+      .panel { max-height: none; overflow-y: visible; }
     }
   </style>
 </head>
@@ -240,12 +243,9 @@
       </div>
 
       <div class="field">
-        <label for="exportSize">다운로드 크기</label>
-        <select id="exportSize">
-          <option value="500" selected>500px</option>
-          <option value="1000">1000px</option>
-          <option value="original">원본</option>
-        </select>
+        <label for="exportWidth">다운로드 가로폭(px)</label>
+        <input id="exportWidth" type="number" min="100" max="5000" value="750" />
+        <div class="help">기본값 750px. 메일에 작게 넣을 땐 500px, 크게 필요하면 1000px 이상 입력.</div>
       </div>
 
       <div class="check-group">
@@ -331,7 +331,7 @@
       </div>
 
       <div class="help">
-        Pretendard 적용 / 글자별 굵기 설정 / 다운로드 크기 선택 / 다운로드 이벤트 추적 포함 버전.
+        Pretendard 적용 / 글자별 굵기 설정 / 다운로드 가로폭 직접 입력 / 다운로드 이벤트 추적 포함 버전.
       </div>
     </div>
 
@@ -411,7 +411,7 @@
     const elEmail = document.getElementById("email");
     const elPhone = document.getElementById("phone");
     const elAddress = document.getElementById("address");
-    const elExportSize = document.getElementById("exportSize");
+    const elExportWidth = document.getElementById("exportWidth");
     const elCategory = document.getElementById("category");
     const elCharacter = document.getElementById("character");
     const elCharPreview = document.getElementById("charPreview");
@@ -735,43 +735,48 @@
       elCharScaleValue.textContent = elCharScale.value;
     }
 
-    function trackDownloadEvent(exportSize) {
+    function getExportWidth() {
+      const rawValue = Number(elExportWidth.value);
+      const fallback = 750;
+
+      if (!Number.isFinite(rawValue) || rawValue <= 0) {
+        return fallback;
+      }
+
+      return Math.min(Math.max(Math.round(rawValue), 100), 5000);
+    }
+
+    function trackDownloadEvent(exportWidth) {
       if (typeof gtag !== "function") return;
 
       gtag("event", "png_download", {
         event_category: "mail_card",
         event_label: elLogoType.value,
         character: elCharacter.options[elCharacter.selectedIndex]?.textContent || "",
-        export_size: exportSize,
+        export_width: exportWidth,
         name_length: elName.value.trim().length
       });
     }
 
     function downloadPNG() {
-      const selectedSize = elExportSize.value;
-      trackDownloadEvent(selectedSize);
+      const exportWidth = getExportWidth();
+      trackDownloadEvent(exportWidth);
 
-      let outputCanvas = canvas;
+      const exportHeight = Math.round(canvas.height * (exportWidth / canvas.width));
 
-      if (selectedSize !== "original") {
-        const exportWidth = Number(selectedSize);
-        const exportHeight = Math.round(canvas.height * (exportWidth / canvas.width));
+      const outputCanvas = document.createElement("canvas");
+      outputCanvas.width = exportWidth;
+      outputCanvas.height = exportHeight;
 
-        outputCanvas = document.createElement("canvas");
-        outputCanvas.width = exportWidth;
-        outputCanvas.height = exportHeight;
-
-        const outputCtx = outputCanvas.getContext("2d");
-        outputCtx.imageSmoothingEnabled = true;
-        outputCtx.imageSmoothingQuality = "high";
-        outputCtx.drawImage(canvas, 0, 0, exportWidth, exportHeight);
-      }
+      const outputCtx = outputCanvas.getContext("2d");
+      outputCtx.imageSmoothingEnabled = true;
+      outputCtx.imageSmoothingQuality = "high";
+      outputCtx.drawImage(canvas, 0, 0, exportWidth, exportHeight);
 
       const fileBase = (elName.value || "mail-card").trim().replace(/\s+/g, "_");
-      const sizeLabel = selectedSize === "original" ? "original" : `${selectedSize}px`;
 
       const link = document.createElement("a");
-      link.download = `${fileBase}_메일명함_${sizeLabel}.png`;
+      link.download = `${fileBase}_메일명함_${exportWidth}px.png`;
       link.href = outputCanvas.toDataURL("image/png");
       link.click();
     }
@@ -785,7 +790,7 @@
       elEmail.value = "hanyangi@hanyang.ac.kr";
       elPhone.value = "031-400-9999";
       elAddress.value = "경기도 안산시 상록구 한양대학로 55 한양대학교 ERICA 캣타워";
-      elExportSize.value = "500";
+      elExportWidth.value = 750;
 
       elBoldName.checked = true;
       elBoldTitle.checked = true;
