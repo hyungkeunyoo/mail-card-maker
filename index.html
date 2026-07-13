@@ -228,6 +228,12 @@
       </div>
 
       <div class="field">
+        <label for="work">담당업무 <span style="font-weight:400;color:#777;">(선택)</span></label>
+        <input id="work" type="text" value="" placeholder="예: 홍보 콘텐츠 제작 및 사진 촬영" />
+        <div class="help">입력하지 않으면 명함에 표시되지 않음. 입력 시 한 줄로 표시되고, 길면 자동 축소됨.</div>
+      </div>
+
+      <div class="field">
         <label for="email">이메일</label>
         <input id="email" type="text" value="hanyangi@hanyang.ac.kr" />
       </div>
@@ -254,6 +260,7 @@
           <label><input id="boldName" type="checkbox" checked> 이름 굵게</label>
           <label><input id="boldTitle" type="checkbox" checked> 직급 굵게</label>
           <label><input id="boldTeam" type="checkbox" checked> 소속 굵게</label>
+          <label><input id="boldWork" type="checkbox"> 담당업무 굵게</label>
           <label><input id="boldContact" type="checkbox" checked> 연락처 굵게</label>
           <label><input id="boldAddress" type="checkbox" checked> 주소 굵게</label>
         </div>
@@ -331,7 +338,7 @@
       </div>
 
       <div class="help">
-        Pretendard 적용 / 글자별 굵기 설정 / 다운로드 가로폭 직접 입력 / 다운로드 이벤트 추적 포함 버전.
+        Pretendard 적용 / 담당업무 선택 입력 / 글자별 굵기 설정 / 다운로드 가로폭 직접 입력 / 다운로드 이벤트 추적 포함.
       </div>
     </div>
 
@@ -355,13 +362,19 @@
 
       name: { x: 120, y: 142, maxWidth: 610, startSize: 142, minSize: 56, color: "#0f4c81" },
       title: { x: 725, y: 236, maxWidth: 240, startSize: 68, minSize: 34, color: "#333333" },
-      team: { x: 118, y: 376, maxWidth: 790, startSize: 46, minSize: 24, color: "#333333" },
+
+      teamWithWork: { x: 118, y: 356, maxWidth: 790, startSize: 42, minSize: 22, color: "#333333" },
+      teamWithoutWork: { x: 118, y: 376, maxWidth: 790, startSize: 46, minSize: 24, color: "#333333" },
+
+      work: { x: 118, y: 414, maxWidth: 860, startSize: 30, minSize: 16, color: "#555555" },
 
       et: { x: 1005, emailY: 316, phoneY: 396, size: 44, color: "#333333" },
 
       email: { x: 1074, y: 316, maxWidth: 460, startSize: 42, minSize: 22, color: "#333333" },
       phone: { x: 1074, y: 396, maxWidth: 460, startSize: 42, minSize: 22, color: "#333333" },
-      address: { x: 118, y: 522, maxWidth: 1370, startSize: 40, minSize: 22, color: "#333333" },
+
+      addressWithWork: { x: 118, y: 522, maxWidth: 1370, startSize: 40, minSize: 22, color: "#333333" },
+      addressWithoutWork: { x: 118, y: 505, maxWidth: 1370, startSize: 40, minSize: 22, color: "#333333" },
 
       characterBox: { x: 1570, y: 150, w: 360, h: 430 }
     };
@@ -408,6 +421,7 @@
     const elName = document.getElementById("name");
     const elTitle = document.getElementById("title");
     const elTeam = document.getElementById("team");
+    const elWork = document.getElementById("work");
     const elEmail = document.getElementById("email");
     const elPhone = document.getElementById("phone");
     const elAddress = document.getElementById("address");
@@ -420,6 +434,7 @@
     const elBoldName = document.getElementById("boldName");
     const elBoldTitle = document.getElementById("boldTitle");
     const elBoldTeam = document.getElementById("boldTeam");
+    const elBoldWork = document.getElementById("boldWork");
     const elBoldContact = document.getElementById("boldContact");
     const elBoldAddress = document.getElementById("boldAddress");
 
@@ -628,11 +643,14 @@
     function drawCard() {
       if (!templateImg.complete) return;
 
+      const hasWork = elWork.value.trim().length > 0;
+      const teamConfig = hasWork ? CONFIG.teamWithWork : CONFIG.teamWithoutWork;
+      const addressConfig = hasWork ? CONFIG.addressWithWork : CONFIG.addressWithoutWork;
+
       ctx.clearRect(0, 0, CONFIG.width, CONFIG.height);
       ctx.drawImage(templateImg, 0, 0, CONFIG.width, CONFIG.height);
 
       drawLogo();
-
       drawNameText(elName.value, CONFIG.name);
 
       drawTextOneLine(
@@ -643,9 +661,17 @@
 
       drawTextOneLine(
         elTeam.value,
-        CONFIG.team,
+        teamConfig,
         getWeight(elBoldTeam.checked, 700, 400)
       );
+
+      if (hasWork) {
+        drawTextOneLine(
+          elWork.value,
+          CONFIG.work,
+          getWeight(elBoldWork.checked, 600, 400)
+        );
+      }
 
       drawET();
 
@@ -663,7 +689,7 @@
 
       drawTextOneLine(
         elAddress.value,
-        CONFIG.address,
+        addressConfig,
         getWeight(elBoldAddress.checked, 700, 400)
       );
 
@@ -754,6 +780,7 @@
         event_label: elLogoType.value,
         character: elCharacter.options[elCharacter.selectedIndex]?.textContent || "",
         export_width: exportWidth,
+        has_work: elWork.value.trim() ? "yes" : "no",
         name_length: elName.value.trim().length
       });
     }
@@ -787,6 +814,7 @@
       elName.value = "하냥이";
       elTitle.value = "귀여움";
       elTeam.value = "한양대학교 ERICA 하냥처 | 하냥팀";
+      elWork.value = "";
       elEmail.value = "hanyangi@hanyang.ac.kr";
       elPhone.value = "031-400-9999";
       elAddress.value = "경기도 안산시 상록구 한양대학로 55 한양대학교 ERICA 캣타워";
@@ -795,6 +823,7 @@
       elBoldName.checked = true;
       elBoldTitle.checked = true;
       elBoldTeam.checked = true;
+      elBoldWork.checked = false;
       elBoldContact.checked = true;
       elBoldAddress.checked = true;
 
@@ -815,11 +844,11 @@
     }
 
     function bindEvents() {
-      [elName, elTitle, elTeam, elEmail, elPhone, elAddress].forEach(el => {
+      [elName, elTitle, elTeam, elWork, elEmail, elPhone, elAddress].forEach(el => {
         el.addEventListener("input", drawCard);
       });
 
-      [elBoldName, elBoldTitle, elBoldTeam, elBoldContact, elBoldAddress].forEach(el => {
+      [elBoldName, elBoldTitle, elBoldTeam, elBoldWork, elBoldContact, elBoldAddress].forEach(el => {
         el.addEventListener("change", drawCard);
       });
 
