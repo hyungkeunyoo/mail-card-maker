@@ -269,13 +269,14 @@
       <div class="two">
         <div class="field">
           <label for="category">캐릭터 분류</label>
-          <select id="category">
+           <select id="category">
             <option value="all">전체</option>
             <option value="hanyangi">하냥이</option>
             <option value="college">단과대학</option>
             <option value="hibibi">하이비비</option>
-          </select>
-        </div>
+            <option value="hylion">하이리온</option>
+            <option value="hynari">하이나리</option>
+</select>        </div>
 
         <div class="field">
           <label for="character">캐릭터</label>
@@ -379,38 +380,61 @@
       characterBox: { x: 1570, y: 150, w: 360, h: 430 }
     };
 
-    function makeCharacters() {
-      const list = [];
+function makeCharacters() {
+  const list = [];
 
-      for (let i = 1; i <= 41; i++) {
-        const num = String(i).padStart(2, "0");
-        list.push({
-          category: "hanyangi",
-          label: `하냥이 ${num}`,
-          file: `assets/chars/hanyangi_${num}.png`
-        });
-      }
+  for (let i = 1; i <= 41; i++) {
+    const num = String(i).padStart(2, "0");
 
-      for (let i = 1; i <= 11; i++) {
-        const num = String(i).padStart(2, "0");
-        list.push({
-          category: "college",
-          label: `단과대학 하냥이 ${num}`,
-          file: `assets/chars/college_${num}.png`
-        });
-      }
+    list.push({
+      category: "hanyangi",
+      label: `하냥이 ${num}`,
+      file: `assets/chars/hanyangi_${num}.png`
+    });
+  }
 
-      for (let i = 1; i <= 24; i++) {
-        const num = String(i).padStart(2, "0");
-        list.push({
-          category: "hibibi",
-          label: `하이비비 ${num}`,
-          file: `assets/chars/hibibi_${num}.png`
-        });
-      }
+  for (let i = 1; i <= 11; i++) {
+    const num = String(i).padStart(2, "0");
 
-      return list;
-    }
+    list.push({
+      category: "college",
+      label: `단과대학 하냥이 ${num}`,
+      file: `assets/chars/college_${num}.png`
+    });
+  }
+
+  for (let i = 1; i <= 24; i++) {
+    const num = String(i).padStart(2, "0");
+
+    list.push({
+      category: "hibibi",
+      label: `하이비비 ${num}`,
+      file: `assets/chars/hibibi_${num}.png`
+    });
+  }
+
+  for (let i = 1; i <= 17; i++) {
+    const num = String(i).padStart(2, "0");
+
+    list.push({
+      category: "hylion",
+      label: `하이리온 ${num}`,
+      file: `assets/chars/hylion_${num}.png`
+    });
+  }
+
+  for (let i = 1; i <= 5; i++) {
+    const num = String(i).padStart(2, "0");
+
+    list.push({
+      category: "hynari",
+      label: `하이나리 ${num}`,
+      file: `assets/chars/hynari_${num}.png`
+    });
+  }
+
+  return list;
+}
 
     const characters = makeCharacters();
 
