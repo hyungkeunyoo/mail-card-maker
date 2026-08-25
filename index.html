@@ -1,89 +1,115 @@
-align-items: start;
-}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    .panel, .preview {
+  <title>메일 명함 생성기</title>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-REQY4913H3"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag("js", new Date());
+    gtag("config", "G-REQY4913H3");
+  </script>
+
+  <!-- Pretendard -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+      background: #f3f4f6;
+      color: #222;
+    }
+
+    .wrap {
+      max-width: 1700px;
+      margin: 24px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 410px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
     .panel,
     .preview {
-background: #fff;
-border-radius: 16px;
-box-shadow: 0 8px 24px rgba(0,0,0,.08);
-@@ -55,18 +56,24 @@
-top: 24px;
-}
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+      padding: 20px;
+    }
 
-    h1 { margin: 0 0 18px; font-size: 24px; }
+    .panel {
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+
+    .preview {
+      position: sticky;
+      top: 24px;
+    }
+
     h1 {
       margin: 0 0 18px;
       font-size: 24px;
     }
 
-    .field { margin-bottom: 14px; }
     .field {
       margin-bottom: 14px;
     }
 
-.field label {
-      display:block;
-      font-size:14px;
-      margin-bottom:6px;
-      font-weight:700;
+    .field label {
       display: block;
       font-size: 14px;
       margin-bottom: 6px;
       font-weight: 700;
-}
+    }
 
-    .field input, .field select {
     .field input,
     .field select {
-width: 100%;
-padding: 11px 12px;
-border: 1px solid #d0d7de;
-@@ -76,84 +83,111 @@
-font-family: inherit;
-}
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #d0d7de;
+      border-radius: 10px;
+      font-size: 14px;
+      background: #fff;
+      font-family: inherit;
+    }
 
     .field input[type="file"] {
       padding: 9px 10px;
     }
 
-.two {
-      display:grid;
+    .two {
       display: grid;
-grid-template-columns: 1fr 1fr;
-      gap:10px;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
-}
+    }
 
-.btn-row {
-      display:flex;
-      gap:10px;
-      margin-top:14px;
-      flex-wrap:wrap;
+    .btn-row {
       display: flex;
       gap: 10px;
       margin-top: 14px;
       flex-wrap: wrap;
-}
+    }
 
-button {
-      border:0;
-      border-radius:10px;
-      padding:12px 16px;
-      cursor:pointer;
-      font-size:14px;
-      font-weight:700;
+    button {
       border: 0;
       border-radius: 10px;
       padding: 12px 16px;
       cursor: pointer;
       font-size: 14px;
       font-weight: 700;
-font-family: inherit;
-}
+      font-family: inherit;
+    }
 
-    .btn-primary { background:#0f4c81; color:#fff; }
-    .btn-secondary { background:#e5e7eb; color:#111827; }
     button:disabled {
       cursor: not-allowed;
       opacity: .45;
@@ -99,36 +125,20 @@ font-family: inherit;
       color: #111827;
     }
 
-.preview-title {
-      margin:0 0 14px;
-      font-size:18px;
-      font-weight:700;
+    .preview-title {
       margin: 0 0 14px;
       font-size: 18px;
       font-weight: 700;
-}
+    }
 
-.preview canvas {
-      width:100%;
-      height:auto;
-      border:1px solid #ddd;
-      background:#fff;
+    .preview canvas {
       width: 100%;
       height: auto;
       border: 1px solid #ddd;
       background: #fff;
       display: block;
-}
+    }
 
-    .char-preview {
-      height:110px;
-      border:1px solid #d0d7de;
-      border-radius:10px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      margin-top:8px;
-      background:#fff;
     .asset-preview {
       height: 110px;
       border: 1px solid #d0d7de;
@@ -139,12 +149,8 @@ font-family: inherit;
       margin-top: 8px;
       background: #fff;
       overflow: hidden;
-}
+    }
 
-    .char-preview img {
-      max-width:90px;
-      max-height:90px;
-      object-fit:contain;
     .asset-preview img {
       max-width: 90px;
       max-height: 90px;
@@ -156,50 +162,60 @@ font-family: inherit;
       height: 90px;
       object-fit: cover;
       border-radius: 12px;
-}
+    }
 
-.range-field {
-      margin:18px 0;
+    .range-field {
       margin: 18px 0;
-padding-top: 4px;
-}
+      padding-top: 4px;
+    }
 
-.range-field > label {
-      display:block;
-      font-size:14px;
-      margin-bottom:8px;
-      font-weight:700;
+    .range-field > label {
       display: block;
       font-size: 14px;
       margin-bottom: 8px;
       font-weight: 700;
-}
+    }
 
-.range-row {
-      display:grid;
-      grid-template-columns:42px 1fr 52px;
-      gap:8px;
-      align-items:center;
-      font-size:13px;
-      margin-top:8px;
+    .range-row {
       display: grid;
       grid-template-columns: 42px 1fr 52px;
       gap: 8px;
       align-items: center;
       font-size: 13px;
       margin-top: 8px;
-}
+    }
 
-    .range-row input { width:100%; }
     .range-row input {
       width: 100%;
     }
 
-.check-group {
-margin: 16px 0;
-@@ -183,17 +217,121 @@
-cursor: pointer;
-}
+    .check-group {
+      margin: 16px 0;
+      padding: 12px;
+      border: 1px solid #d0d7de;
+      border-radius: 10px;
+      background: #fafafa;
+    }
+
+    .check-group-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 10px;
+      font-size: 13px;
+    }
+
+    .check-grid label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
 
     .mode-box {
       margin: 18px 0 16px;
@@ -237,11 +253,7 @@ cursor: pointer;
       line-height: 1.55;
     }
 
-.help {
-      margin-top:8px;
-      font-size:13px;
-      color:#666;
-      line-height:1.55;
+    .help {
       margin-top: 8px;
       font-size: 13px;
       color: #666;
@@ -271,12 +283,8 @@ cursor: pointer;
       margin-top: 14px;
       padding-top: 14px;
       border-top: 1px solid #e5e7eb;
-}
+    }
 
-    @media (max-width:1100px) {
-      .wrap { grid-template-columns: 1fr; }
-      .preview { position: static; }
-      .panel { max-height: none; overflow-y: visible; }
     .patch-date {
       display: inline-block;
       margin-bottom: 6px;
@@ -324,42 +332,89 @@ cursor: pointer;
       .check-grid {
         grid-template-columns: 1fr;
       }
-}
-</style>
+    }
+  </style>
 </head>
-@@ -266,34 +404,120 @@ <h1>메일 명함 생성기</h1>
-</div>
-</div>
 
-      <div class="two">
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <h1>메일 명함 생성기</h1>
+
+      <div class="field">
+        <label for="logoType">상단 로고</label>
+        <select id="logoType">
+          <option value="erica">한양대학교 ERICA</option>
+          <option value="hanyang">한양대</option>
+          <option value="none">로고 없음</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="name">이름</label>
+        <input id="name" type="text" value="하냥이" />
+      </div>
+
+      <div class="field">
+        <label for="title">직급</label>
+        <input id="title" type="text" value="귀여움" />
+      </div>
+
+      <div class="field">
+        <label for="team">팀명 / 소속</label>
+        <input id="team" type="text" value="한양대학교 ERICA 하냥처 | 하냥팀" />
+      </div>
+
+      <div class="field">
+        <label for="work">담당업무 <span style="font-weight:400;color:#777;">(선택)</span></label>
+        <input id="work" type="text" value="" placeholder="예: 홍보 콘텐츠 제작 및 사진 촬영" />
+        <div class="help">입력하지 않으면 명함에 표시되지 않음. 입력 시 한 줄로 표시되고, 길면 자동 축소됨.</div>
+      </div>
+
+      <div class="field">
+        <label for="email">이메일</label>
+        <input id="email" type="text" value="hanyangi@hanyang.ac.kr" />
+      </div>
+
+      <div class="field">
+        <label for="phone">전화번호</label>
+        <input id="phone" type="text" value="031-400-9999" />
+      </div>
+
+      <div class="field">
+        <label for="address">사무실 주소</label>
+        <input id="address" type="text" value="경기도 안산시 상록구 한양대학로 55 한양대학교 ERICA 캣타워" />
+      </div>
+
+      <div class="field">
+        <label for="exportWidth">다운로드 가로폭(px)</label>
+        <input id="exportWidth" type="number" min="100" max="5000" value="750" />
+        <div class="help">기본값 750px. 메일에 작게 넣을 땐 500px, 크게 필요하면 1000px 이상 입력.</div>
+      </div>
+
+      <div class="check-group">
+        <div class="check-group-title">글자 굵기 설정</div>
+        <div class="check-grid">
+          <label><input id="boldName" type="checkbox" checked> 이름 굵게</label>
+          <label><input id="boldTitle" type="checkbox" checked> 직급 굵게</label>
+          <label><input id="boldTeam" type="checkbox" checked> 소속 굵게</label>
+          <label><input id="boldWork" type="checkbox"> 담당업무 굵게</label>
+          <label><input id="boldContact" type="checkbox" checked> 연락처 굵게</label>
+          <label><input id="boldAddress" type="checkbox" checked> 주소 굵게</label>
+        </div>
+      </div>
+
       <div class="mode-box">
-<div class="field">
-          <label for="category">캐릭터 분류</label>
-           <select id="category">
-            <option value="all">전체</option>
-            <option value="hanyangi">하냥이</option>
-            <option value="college">단과대학</option>
-            <option value="hibibi">하이비비</option>
-            <option value="hylion">하이리온</option>
-            <option value="hynari">하이나리</option>
-</select>        </div>
-
         <div class="field">
-          <label for="character">캐릭터</label>
-          <select id="character"></select>
           <label for="imageMode">오른쪽 이미지 유형</label>
           <select id="imageMode">
             <option value="character">캐릭터 사용</option>
             <option value="photo">내 사진 사용</option>
             <option value="none">이미지 사용 안 함</option>
           </select>
-</div>
-</div>
-
-      <div class="btn-row">
-        <button class="btn-secondary" id="prevBtn" type="button">이전</button>
-        <button class="btn-secondary" id="nextBtn" type="button">다음</button>
+        </div>
       </div>
+
       <div id="characterControls" class="section-box">
         <p class="section-title">캐릭터 설정</p>
 
@@ -382,8 +437,6 @@ cursor: pointer;
           </div>
         </div>
 
-      <div class="char-preview">
-        <img id="charPreview" alt="캐릭터 미리보기" />
         <div class="btn-row">
           <button class="btn-secondary" id="prevBtn" type="button">이전</button>
           <button class="btn-secondary" id="nextBtn" type="button">다음</button>
@@ -413,9 +466,8 @@ cursor: pointer;
             <span id="charScaleValue">100</span>
           </div>
         </div>
-</div>
+      </div>
 
-      <div class="help" id="charCountInfo"></div>
       <div id="photoControls" class="section-box hidden">
         <p class="section-title">내 사진 설정</p>
 
@@ -467,46 +519,39 @@ cursor: pointer;
         </div>
       </div>
 
-<div class="range-field">
-<label>이름 위치/크기 미세조정</label>
-@@ -314,38 +538,35 @@ <h1>메일 명함 생성기</h1>
-</div>
-</div>
-
       <div class="range-field">
-        <label>캐릭터 위치/크기 미세조정</label>
+        <label>이름 위치/크기 미세조정</label>
         <div class="range-row">
           <span>좌우</span>
-          <input id="charOffsetX" type="range" min="-250" max="250" value="0" />
-          <span id="charOffsetXValue">0</span>
+          <input id="nameOffsetX" type="range" min="-200" max="200" value="0" />
+          <span id="nameOffsetXValue">0</span>
         </div>
         <div class="range-row">
           <span>상하</span>
-          <input id="charOffsetY" type="range" min="-250" max="250" value="0" />
-          <span id="charOffsetYValue">0</span>
+          <input id="nameOffsetY" type="range" min="-120" max="120" value="0" />
+          <span id="nameOffsetYValue">0</span>
         </div>
         <div class="range-row">
           <span>크기</span>
-          <input id="charScale" type="range" min="40" max="160" value="100" />
-          <span id="charScaleValue">100</span>
+          <input id="nameScale" type="range" min="60" max="140" value="100" />
+          <span id="nameScaleValue">100</span>
         </div>
       </div>
 
-<div class="btn-row">
-<button class="btn-primary" id="downloadBtn" type="button">PNG 다운로드</button>
-<button class="btn-secondary" id="resetBtn" type="button">기본값 복원</button>
-</div>
+      <div class="btn-row">
+        <button class="btn-primary" id="downloadBtn" type="button">PNG 다운로드</button>
+        <button class="btn-secondary" id="resetBtn" type="button">기본값 복원</button>
+      </div>
 
-<div class="help">
-        Pretendard 적용 / 담당업무 선택 입력 / 글자별 굵기 설정 / 다운로드 가로폭 직접 입력 / 다운로드 이벤트 추적 포함.
+      <div class="help">
         Pretendard 적용 / 담당업무 선택 입력 / 글자별 굵기 설정 / 캐릭터·내 사진·이미지 없음 선택 /
         다운로드 가로폭 직접 입력 / 다운로드 이벤트 추적 포함.
-</div>
-</div>
+      </div>
+    </div>
 
-<div class="preview">
-<p class="preview-title">미리보기</p>
-<canvas id="canvas" width="2048" height="706"></canvas>
+    <div class="preview">
+      <p class="preview-title">미리보기</p>
+      <canvas id="canvas" width="2048" height="706"></canvas>
 
       <!-- 패치 내역은 아래 내용을 직접 수정하거나 항목을 추가하면 됨 -->
       <div class="patch-notes">
@@ -522,29 +567,46 @@ cursor: pointer;
           </ul>
         </div>
       </div>
-</div>
-</div>
+    </div>
+  </div>
 
-@@ -380,61 +601,61 @@ <h1>메일 명함 생성기</h1>
-characterBox: { x: 1570, y: 150, w: 360, h: 430 }
-};
+  <script>
+    const FONT_FAMILY = '"Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif';
 
-function makeCharacters() {
-  const list = [];
+    const CONFIG = {
+      width: 2048,
+      height: 706,
+
+      logos: {
+        erica: { src: "assets/logos/hyu_erica.png", x: 1642, y: 54, w: 340, h: 70 },
+        hanyang: { src: "assets/logos/hyu.png", x: 1666, y: 56, w: 300, h: 72 }
+      },
+
+      name: { x: 120, y: 142, maxWidth: 610, startSize: 142, minSize: 56, color: "#0f4c81" },
+      title: { x: 725, y: 236, maxWidth: 240, startSize: 68, minSize: 34, color: "#333333" },
+
+      teamWithWork: { x: 118, y: 356, maxWidth: 790, startSize: 42, minSize: 22, color: "#333333" },
+      teamWithoutWork: { x: 118, y: 376, maxWidth: 790, startSize: 46, minSize: 24, color: "#333333" },
+
+      work: { x: 118, y: 414, maxWidth: 860, startSize: 30, minSize: 16, color: "#555555" },
+
+      et: { x: 1005, emailY: 316, phoneY: 396, size: 44, color: "#333333" },
+
+      email: { x: 1074, y: 316, maxWidth: 460, startSize: 42, minSize: 22, color: "#333333" },
+      phone: { x: 1074, y: 396, maxWidth: 460, startSize: 42, minSize: 22, color: "#333333" },
+
+      addressWithWork: { x: 118, y: 522, maxWidth: 1370, startSize: 40, minSize: 22, color: "#333333" },
+      addressWithoutWork: { x: 118, y: 505, maxWidth: 1370, startSize: 40, minSize: 22, color: "#333333" },
+
+      characterBox: { x: 1570, y: 150, w: 360, h: 430 }
+    };
+
     function makeCharacters() {
       const list = [];
 
-  for (let i = 1; i <= 41; i++) {
-    const num = String(i).padStart(2, "0");
       for (let i = 1; i <= 41; i++) {
         const num = String(i).padStart(2, "0");
 
-    list.push({
-      category: "hanyangi",
-      label: `하냥이 ${num}`,
-      file: `assets/chars/hanyangi_${num}.png`
-    });
-  }
         list.push({
           category: "hanyangi",
           label: `하냥이 ${num}`,
@@ -552,17 +614,9 @@ function makeCharacters() {
         });
       }
 
-  for (let i = 1; i <= 11; i++) {
-    const num = String(i).padStart(2, "0");
       for (let i = 1; i <= 11; i++) {
         const num = String(i).padStart(2, "0");
 
-    list.push({
-      category: "college",
-      label: `단과대학 하냥이 ${num}`,
-      file: `assets/chars/college_${num}.png`
-    });
-  }
         list.push({
           category: "college",
           label: `단과대학 하냥이 ${num}`,
@@ -570,17 +624,9 @@ function makeCharacters() {
         });
       }
 
-  for (let i = 1; i <= 24; i++) {
-    const num = String(i).padStart(2, "0");
       for (let i = 1; i <= 24; i++) {
         const num = String(i).padStart(2, "0");
 
-    list.push({
-      category: "hibibi",
-      label: `하이비비 ${num}`,
-      file: `assets/chars/hibibi_${num}.png`
-    });
-  }
         list.push({
           category: "hibibi",
           label: `하이비비 ${num}`,
@@ -588,17 +634,9 @@ function makeCharacters() {
         });
       }
 
-  for (let i = 1; i <= 17; i++) {
-    const num = String(i).padStart(2, "0");
       for (let i = 1; i <= 17; i++) {
         const num = String(i).padStart(2, "0");
 
-    list.push({
-      category: "hylion",
-      label: `하이리온 ${num}`,
-      file: `assets/chars/hylion_${num}.png`
-    });
-  }
         list.push({
           category: "hylion",
           label: `하이리온 ${num}`,
@@ -606,17 +644,9 @@ function makeCharacters() {
         });
       }
 
-  for (let i = 1; i <= 5; i++) {
-    const num = String(i).padStart(2, "0");
       for (let i = 1; i <= 5; i++) {
         const num = String(i).padStart(2, "0");
 
-    list.push({
-      category: "hynari",
-      label: `하이나리 ${num}`,
-      file: `assets/chars/hynari_${num}.png`
-    });
-  }
         list.push({
           category: "hynari",
           label: `하이나리 ${num}`,
@@ -624,37 +654,57 @@ function makeCharacters() {
         });
       }
 
-  return list;
-}
       return list;
     }
 
-const characters = makeCharacters();
+    const characters = makeCharacters();
 
-@@ -450,11 +671,20 @@ <h1>메일 명함 생성기</h1>
-const elPhone = document.getElementById("phone");
-const elAddress = document.getElementById("address");
-const elExportWidth = document.getElementById("exportWidth");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const elLogoType = document.getElementById("logoType");
+    const elName = document.getElementById("name");
+    const elTitle = document.getElementById("title");
+    const elTeam = document.getElementById("team");
+    const elWork = document.getElementById("work");
+    const elEmail = document.getElementById("email");
+    const elPhone = document.getElementById("phone");
+    const elAddress = document.getElementById("address");
+    const elExportWidth = document.getElementById("exportWidth");
 
     const elImageMode = document.getElementById("imageMode");
     const elCharacterControls = document.getElementById("characterControls");
     const elPhotoControls = document.getElementById("photoControls");
 
-const elCategory = document.getElementById("category");
-const elCharacter = document.getElementById("character");
-const elCharPreview = document.getElementById("charPreview");
-const elCharCountInfo = document.getElementById("charCountInfo");
+    const elCategory = document.getElementById("category");
+    const elCharacter = document.getElementById("character");
+    const elCharPreview = document.getElementById("charPreview");
+    const elCharCountInfo = document.getElementById("charCountInfo");
 
     const elPhotoUpload = document.getElementById("photoUpload");
     const elPhotoPreview = document.getElementById("photoPreview");
     const elPhotoShape = document.getElementById("photoShape");
 
-const elBoldName = document.getElementById("boldName");
-const elBoldTitle = document.getElementById("boldTitle");
-const elBoldTeam = document.getElementById("boldTeam");
-@@ -476,8 +706,17 @@ <h1>메일 명함 생성기</h1>
-const elCharOffsetYValue = document.getElementById("charOffsetYValue");
-const elCharScaleValue = document.getElementById("charScaleValue");
+    const elBoldName = document.getElementById("boldName");
+    const elBoldTitle = document.getElementById("boldTitle");
+    const elBoldTeam = document.getElementById("boldTeam");
+    const elBoldWork = document.getElementById("boldWork");
+    const elBoldContact = document.getElementById("boldContact");
+    const elBoldAddress = document.getElementById("boldAddress");
+
+    const elNameOffsetX = document.getElementById("nameOffsetX");
+    const elNameOffsetY = document.getElementById("nameOffsetY");
+    const elNameScale = document.getElementById("nameScale");
+    const elNameOffsetXValue = document.getElementById("nameOffsetXValue");
+    const elNameOffsetYValue = document.getElementById("nameOffsetYValue");
+    const elNameScaleValue = document.getElementById("nameScaleValue");
+
+    const elCharOffsetX = document.getElementById("charOffsetX");
+    const elCharOffsetY = document.getElementById("charOffsetY");
+    const elCharScale = document.getElementById("charScale");
+    const elCharOffsetXValue = document.getElementById("charOffsetXValue");
+    const elCharOffsetYValue = document.getElementById("charOffsetYValue");
+    const elCharScaleValue = document.getElementById("charScaleValue");
 
     const elPhotoOffsetX = document.getElementById("photoOffsetX");
     const elPhotoOffsetY = document.getElementById("photoOffsetY");
@@ -663,25 +713,182 @@ const elCharScaleValue = document.getElementById("charScaleValue");
     const elPhotoOffsetYValue = document.getElementById("photoOffsetYValue");
     const elPhotoScaleValue = document.getElementById("photoScaleValue");
 
-const templateImg = new Image();
-let selectedCharImg = new Image();
+    const templateImg = new Image();
+    let selectedCharImg = new Image();
     let uploadedPhotoImg = null;
     let uploadedPhotoUrl = null;
-let filteredCharacters = [];
-const logoImages = {};
+    let filteredCharacters = [];
+    const logoImages = {};
 
-@@ -552,7 +791,7 @@ <h1>메일 명함 생성기</h1>
-y: opt.y + offsetY,
-startSize: Math.round(startSize * scale),
-minSize: Math.max(18, Math.round(minSize * scale)),
-        maxWidth: maxWidth
+    function getWeight(checked, bold = 700, normal = 400) {
+      return checked ? bold : normal;
+    }
+
+    function getNameWeight() {
+      return elBoldName.checked ? 800 : 500;
+    }
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("이미지 로드 실패: " + src));
+        img.src = src;
+      });
+    }
+
+    function setFont(weight, size) {
+      ctx.font = `${weight} ${size}px ${FONT_FAMILY}`;
+    }
+
+    function fitFontSize(text, maxWidth, startSize, minSize, weight) {
+      let size = startSize;
+      const safeText = text || "";
+
+      while (size >= minSize) {
+        setFont(weight, size);
+        if (ctx.measureText(safeText).width <= maxWidth) return size;
+        size--;
+      }
+
+      return minSize;
+    }
+
+    function drawTextOneLine(text, opt, weight) {
+      const finalText = (text || " ").trim() || " ";
+      const size = fitFontSize(finalText, opt.maxWidth, opt.startSize, opt.minSize, weight);
+
+      ctx.fillStyle = opt.color;
+      ctx.textBaseline = "top";
+      setFont(weight, size);
+      ctx.fillText(finalText, opt.x, opt.y);
+    }
+
+    function drawNameText(text, opt) {
+      const finalText = (text || " ").trim() || " ";
+      const offsetX = Number(elNameOffsetX.value);
+      const offsetY = Number(elNameOffsetY.value);
+      const scale = Number(elNameScale.value) / 100;
+      const weight = getNameWeight();
+
+      let startSize = opt.startSize;
+      let minSize = opt.minSize;
+      let maxWidth = opt.maxWidth;
+
+      const hasEnglish = /[A-Za-z]/.test(finalText);
+
+      if (hasEnglish) {
+        startSize -= 18;
+        minSize -= 4;
+        maxWidth += 60;
+      } else if (finalText.length >= 4) {
+        startSize -= 12;
+      }
+
+      drawTextOneLine(finalText, {
+        ...opt,
+        x: opt.x + offsetX,
+        y: opt.y + offsetY,
+        startSize: Math.round(startSize * scale),
+        minSize: Math.max(18, Math.round(minSize * scale)),
         maxWidth
-}, weight);
-}
+      }, weight);
+    }
 
-@@ -651,6 +890,80 @@ <h1>메일 명함 생성기</h1>
-ctx.drawImage(img, t.sx, t.sy, t.sw, t.sh, drawX, drawY, drawW, drawH);
-}
+    function drawET() {
+      const weight = getWeight(elBoldContact.checked, 700, 400);
+
+      ctx.fillStyle = CONFIG.et.color;
+      ctx.textBaseline = "top";
+      setFont(weight, CONFIG.et.size);
+      ctx.fillText("E", CONFIG.et.x, CONFIG.et.emailY);
+      ctx.fillText("T", CONFIG.et.x, CONFIG.et.phoneY);
+    }
+
+    function getTrimRect(img, trimWhite = true) {
+      const tempCanvas = document.createElement("canvas");
+      const tempCtx = tempCanvas.getContext("2d");
+
+      tempCanvas.width = img.width;
+      tempCanvas.height = img.height;
+      tempCtx.drawImage(img, 0, 0);
+
+      const data = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height).data;
+
+      let minX = tempCanvas.width;
+      let minY = tempCanvas.height;
+      let maxX = 0;
+      let maxY = 0;
+      let found = false;
+
+      for (let y = 0; y < tempCanvas.height; y++) {
+        for (let x = 0; x < tempCanvas.width; x++) {
+          const idx = (y * tempCanvas.width + x) * 4;
+          const r = data[idx];
+          const g = data[idx + 1];
+          const b = data[idx + 2];
+          const a = data[idx + 3];
+
+          const transparent = a < 10;
+          const white = trimWhite && r > 248 && g > 248 && b > 248;
+
+          if (!transparent && !white) {
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+            found = true;
+          }
+        }
+      }
+
+      if (!found) {
+        return { sx: 0, sy: 0, sw: img.width, sh: img.height };
+      }
+
+      const p = 8;
+      minX = Math.max(0, minX - p);
+      minY = Math.max(0, minY - p);
+      maxX = Math.min(tempCanvas.width, maxX + p);
+      maxY = Math.min(tempCanvas.height, maxY + p);
+
+      return {
+        sx: minX,
+        sy: minY,
+        sw: maxX - minX,
+        sh: maxY - minY
+      };
+    }
+
+    function drawTrimmedInBox(img, box, trimWhite = true) {
+      const t = getTrimRect(img, trimWhite);
+      const scale = Math.min(box.w / t.sw, box.h / t.sh);
+
+      const drawW = t.sw * scale;
+      const drawH = t.sh * scale;
+      const drawX = box.x + (box.w - drawW) / 2;
+      const drawY = box.y + (box.h - drawH) / 2;
+
+      ctx.drawImage(img, t.sx, t.sy, t.sw, t.sh, drawX, drawY, drawW, drawH);
+    }
+
+    function drawContainTrimmedCharacter(img, box) {
+      const t = getTrimRect(img, true);
+
+      const scaleInput = Number(elCharScale.value) / 100;
+      const offsetX = Number(elCharOffsetX.value);
+      const offsetY = Number(elCharOffsetY.value);
+
+      const baseScale = Math.min(box.w / t.sw, box.h / t.sh);
+      const scale = baseScale * scaleInput;
+
+      const drawW = t.sw * scale;
+      const drawH = t.sh * scale;
+      const drawX = box.x + (box.w - drawW) / 2 + offsetX;
+      const drawY = box.y + (box.h - drawH) / 2 + offsetY;
+
+      ctx.drawImage(img, t.sx, t.sy, t.sw, t.sh, drawX, drawY, drawW, drawH);
+    }
 
     function roundedRectPath(context, x, y, width, height, radius) {
       const safeRadius = Math.min(radius, width / 2, height / 2);
@@ -757,12 +964,18 @@ ctx.drawImage(img, t.sx, t.sy, t.sw, t.sh, drawX, drawY, drawW, drawH);
       ctx.restore();
     }
 
-function drawLogo() {
-const type = elLogoType.value;
+    function drawLogo() {
+      const type = elLogoType.value;
 
-@@ -664,6 +977,21 @@ <h1>메일 명함 생성기</h1>
-drawTrimmedInBox(img, box, false);
-}
+      if (type === "none") return;
+
+      const img = logoImages[type];
+      const box = CONFIG.logos[type];
+
+      if (!img || !box) return;
+
+      drawTrimmedInBox(img, box, false);
+    }
 
     function drawRightImage() {
       const mode = elImageMode.value;
@@ -779,41 +992,92 @@ drawTrimmedInBox(img, box, false);
       }
     }
 
-function drawCard() {
-if (!templateImg.complete) return;
+    function drawCard() {
+      if (!templateImg.complete) return;
 
-@@ -717,16 +1045,14 @@ <h1>메일 명함 생성기</h1>
-getWeight(elBoldAddress.checked, 700, 400)
-);
+      const hasWork = elWork.value.trim().length > 0;
+      const teamConfig = hasWork ? CONFIG.teamWithWork : CONFIG.teamWithoutWork;
+      const addressConfig = hasWork ? CONFIG.addressWithWork : CONFIG.addressWithoutWork;
 
-      if (selectedCharImg && selectedCharImg.complete && selectedCharImg.naturalWidth > 0) {
-        drawContainTrimmedCharacter(selectedCharImg, CONFIG.characterBox);
+      ctx.clearRect(0, 0, CONFIG.width, CONFIG.height);
+      ctx.drawImage(templateImg, 0, 0, CONFIG.width, CONFIG.height);
+
+      drawLogo();
+      drawNameText(elName.value, CONFIG.name);
+
+      drawTextOneLine(
+        elTitle.value,
+        CONFIG.title,
+        getWeight(elBoldTitle.checked, 700, 400)
+      );
+
+      drawTextOneLine(
+        elTeam.value,
+        teamConfig,
+        getWeight(elBoldTeam.checked, 700, 400)
+      );
+
+      if (hasWork) {
+        drawTextOneLine(
+          elWork.value,
+          CONFIG.work,
+          getWeight(elBoldWork.checked, 600, 400)
+        );
       }
+
+      drawET();
+
+      drawTextOneLine(
+        elEmail.value,
+        CONFIG.email,
+        getWeight(elBoldContact.checked, 700, 400)
+      );
+
+      drawTextOneLine(
+        elPhone.value,
+        CONFIG.phone,
+        getWeight(elBoldContact.checked, 700, 400)
+      );
+
+      drawTextOneLine(
+        elAddress.value,
+        addressConfig,
+        getWeight(elBoldAddress.checked, 700, 400)
+      );
+
       drawRightImage();
-}
+    }
 
-function refreshCharacterOptions(keepFile = null) {
-const category = elCategory.value;
+    function refreshCharacterOptions(keepFile = null) {
+      const category = elCategory.value;
 
-      filteredCharacters = characters.filter(c => {
-        return category === "all" || c.category === category;
       filteredCharacters = characters.filter(char => {
         return category === "all" || char.category === category;
-});
+      });
 
-elCharacter.innerHTML = "";
-@@ -745,12 +1071,21 @@ <h1>메일 명함 생성기</h1>
-elCharacter.appendChild(option);
-});
+      elCharacter.innerHTML = "";
 
-      elCharCountInfo.textContent = `현재 분류 ${filteredCharacters.length}종 / 전체 ${characters.length}종`;
+      filteredCharacters.forEach((char, index) => {
+        const option = document.createElement("option");
+        option.value = char.file;
+        option.textContent = char.label;
+
+        if (keepFile && char.file === keepFile) {
+          option.selected = true;
+        } else if (!keepFile && index === 0) {
+          option.selected = true;
+        }
+
+        elCharacter.appendChild(option);
+      });
+
       elCharCountInfo.textContent =
         `현재 분류 ${filteredCharacters.length}종 / 전체 ${characters.length}종`;
-}
+    }
 
-async function updateCharacterAndDraw() {
-try {
-const src = elCharacter.value;
+    async function updateCharacterAndDraw() {
+      try {
+        const src = elCharacter.value;
 
         if (!src) {
           selectedCharImg = null;
@@ -822,31 +1086,29 @@ const src = elCharacter.value;
           return;
         }
 
-selectedCharImg = await loadImage(src);
-elCharPreview.src = src;
-drawCard();
-@@ -762,19 +1097,89 @@ <h1>메일 명함 생성기</h1>
-function moveCharacter(direction) {
-if (!filteredCharacters.length) return;
+        selectedCharImg = await loadImage(src);
+        elCharPreview.src = src;
+        drawCard();
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
-      let idx = filteredCharacters.findIndex(c => c.file === elCharacter.value);
+    function moveCharacter(direction) {
+      if (!filteredCharacters.length) return;
+
       let index = filteredCharacters.findIndex(char => char.file === elCharacter.value);
 
-      if (idx < 0) idx = 0;
       if (index < 0) index = 0;
 
-      idx += direction;
       index += direction;
 
-      if (idx < 0) idx = filteredCharacters.length - 1;
-      if (idx >= filteredCharacters.length) idx = 0;
       if (index < 0) index = filteredCharacters.length - 1;
       if (index >= filteredCharacters.length) index = 0;
 
-      elCharacter.value = filteredCharacters[idx].file;
       elCharacter.value = filteredCharacters[index].file;
-updateCharacterAndDraw();
-}
+      updateCharacterAndDraw();
+    }
 
     function updateImageModeUI() {
       const mode = elImageMode.value;
@@ -918,23 +1180,30 @@ updateCharacterAndDraw();
       image.src = uploadedPhotoUrl;
     }
 
-function updateRangeLabels() {
-elNameOffsetXValue.textContent = elNameOffsetX.value;
-elNameOffsetYValue.textContent = elNameOffsetY.value;
-@@ -783,6 +1188,10 @@ <h1>메일 명함 생성기</h1>
-elCharOffsetXValue.textContent = elCharOffsetX.value;
-elCharOffsetYValue.textContent = elCharOffsetY.value;
-elCharScaleValue.textContent = elCharScale.value;
+    function updateRangeLabels() {
+      elNameOffsetXValue.textContent = elNameOffsetX.value;
+      elNameOffsetYValue.textContent = elNameOffsetY.value;
+      elNameScaleValue.textContent = elNameScale.value;
+
+      elCharOffsetXValue.textContent = elCharOffsetX.value;
+      elCharOffsetYValue.textContent = elCharOffsetY.value;
+      elCharScaleValue.textContent = elCharScale.value;
 
       elPhotoOffsetXValue.textContent = elPhotoOffsetX.value;
       elPhotoOffsetYValue.textContent = elPhotoOffsetY.value;
       elPhotoScaleValue.textContent = elPhotoScale.value;
-}
+    }
 
-function getExportWidth() {
-@@ -796,13 +1205,28 @@ <h1>메일 명함 생성기</h1>
-return Math.min(Math.max(Math.round(rawValue), 100), 5000);
-}
+    function getExportWidth() {
+      const rawValue = Number(elExportWidth.value);
+      const fallback = 750;
+
+      if (!Number.isFinite(rawValue) || rawValue <= 0) {
+        return fallback;
+      }
+
+      return Math.min(Math.max(Math.round(rawValue), 100), 5000);
+    }
 
     function getSelectedImageLabel() {
       const mode = elImageMode.value;
@@ -950,30 +1219,74 @@ return Math.min(Math.max(Math.round(rawValue), 100), 5000);
       return "none";
     }
 
-function trackDownloadEvent(exportWidth) {
-if (typeof gtag !== "function") return;
+    function trackDownloadEvent(exportWidth) {
+      if (typeof gtag !== "function") return;
 
-gtag("event", "png_download", {
-event_category: "mail_card",
-event_label: elLogoType.value,
-        character: elCharacter.options[elCharacter.selectedIndex]?.textContent || "",
+      gtag("event", "png_download", {
+        event_category: "mail_card",
+        event_label: elLogoType.value,
         image_mode: elImageMode.value,
         image_label: getSelectedImageLabel(),
-export_width: exportWidth,
-has_work: elWork.value.trim() ? "yes" : "no",
-name_length: elName.value.trim().length
-@@ -851,6 +1275,8 @@ <h1>메일 명함 생성기</h1>
-elBoldContact.checked = true;
-elBoldAddress.checked = true;
+        export_width: exportWidth,
+        has_work: elWork.value.trim() ? "yes" : "no",
+        name_length: elName.value.trim().length
+      });
+    }
+
+    function downloadPNG() {
+      const exportWidth = getExportWidth();
+      trackDownloadEvent(exportWidth);
+
+      const exportHeight = Math.round(canvas.height * (exportWidth / canvas.width));
+
+      const outputCanvas = document.createElement("canvas");
+      outputCanvas.width = exportWidth;
+      outputCanvas.height = exportHeight;
+
+      const outputCtx = outputCanvas.getContext("2d");
+      outputCtx.imageSmoothingEnabled = true;
+      outputCtx.imageSmoothingQuality = "high";
+      outputCtx.drawImage(canvas, 0, 0, exportWidth, exportHeight);
+
+      const fileBase = (elName.value || "mail-card").trim().replace(/\s+/g, "_");
+
+      const link = document.createElement("a");
+      link.download = `${fileBase}_메일명함_${exportWidth}px.png`;
+      link.href = outputCanvas.toDataURL("image/png");
+      link.click();
+    }
+
+    function resetDefaults() {
+      elLogoType.value = "erica";
+
+      elName.value = "하냥이";
+      elTitle.value = "귀여움";
+      elTeam.value = "한양대학교 ERICA 하냥처 | 하냥팀";
+      elWork.value = "";
+      elEmail.value = "hanyangi@hanyang.ac.kr";
+      elPhone.value = "031-400-9999";
+      elAddress.value = "경기도 안산시 상록구 한양대학로 55 한양대학교 ERICA 캣타워";
+      elExportWidth.value = 750;
+
+      elBoldName.checked = true;
+      elBoldTitle.checked = true;
+      elBoldTeam.checked = true;
+      elBoldWork.checked = false;
+      elBoldContact.checked = true;
+      elBoldAddress.checked = true;
 
       elImageMode.value = "character";
 
-elCategory.value = "all";
-refreshCharacterOptions();
+      elCategory.value = "all";
+      refreshCharacterOptions();
 
-@@ -862,21 +1288,29 @@ <h1>메일 명함 생성기</h1>
-elCharOffsetY.value = 0;
-elCharScale.value = 100;
+      elNameOffsetX.value = 0;
+      elNameOffsetY.value = 0;
+      elNameScale.value = 100;
+
+      elCharOffsetX.value = 0;
+      elCharOffsetY.value = 0;
+      elCharScale.value = 100;
 
       clearUploadedPhoto();
       elPhotoShape.value = "rounded";
@@ -981,36 +1294,34 @@ elCharScale.value = 100;
       elPhotoOffsetY.value = 0;
       elPhotoScale.value = 100;
 
-updateRangeLabels();
+      updateRangeLabels();
       updateImageModeUI();
-updateCharacterAndDraw();
-drawCard();
-}
+      updateCharacterAndDraw();
+      drawCard();
+    }
 
-function bindEvents() {
-      [elName, elTitle, elTeam, elWork, elEmail, elPhone, elAddress].forEach(el => {
-        el.addEventListener("input", drawCard);
+    function bindEvents() {
       [elName, elTitle, elTeam, elWork, elEmail, elPhone, elAddress].forEach(element => {
         element.addEventListener("input", drawCard);
-});
+      });
 
-      [elBoldName, elBoldTitle, elBoldTeam, elBoldWork, elBoldContact, elBoldAddress].forEach(el => {
-        el.addEventListener("change", drawCard);
       [elBoldName, elBoldTitle, elBoldTeam, elBoldWork, elBoldContact, elBoldAddress].forEach(element => {
         element.addEventListener("change", drawCard);
-});
+      });
 
-elLogoType.addEventListener("change", drawCard);
+      elLogoType.addEventListener("change", drawCard);
       elImageMode.addEventListener("change", updateImageModeUI);
 
-elCategory.addEventListener("change", () => {
-refreshCharacterOptions();
-@@ -888,21 +1322,41 @@ <h1>메일 명함 생성기</h1>
-document.getElementById("prevBtn").addEventListener("click", () => moveCharacter(-1));
-document.getElementById("nextBtn").addEventListener("click", () => moveCharacter(1));
+      elCategory.addEventListener("change", () => {
+        refreshCharacterOptions();
+        updateCharacterAndDraw();
+      });
 
-      [elNameOffsetX, elNameOffsetY, elNameScale, elCharOffsetX, elCharOffsetY, elCharScale].forEach(el => {
-        el.addEventListener("input", () => {
+      elCharacter.addEventListener("change", updateCharacterAndDraw);
+
+      document.getElementById("prevBtn").addEventListener("click", () => moveCharacter(-1));
+      document.getElementById("nextBtn").addEventListener("click", () => moveCharacter(1));
+
       elPhotoUpload.addEventListener("change", handlePhotoUpload);
       elPhotoShape.addEventListener("change", drawCard);
 
@@ -1026,33 +1337,45 @@ document.getElementById("nextBtn").addEventListener("click", () => moveCharacter
         elPhotoScale
       ].forEach(element => {
         element.addEventListener("input", () => {
-updateRangeLabels();
-drawCard();
-});
-});
+          updateRangeLabels();
+          drawCard();
+        });
+      });
 
-document.getElementById("downloadBtn").addEventListener("click", downloadPNG);
-document.getElementById("resetBtn").addEventListener("click", resetDefaults);
+      document.getElementById("downloadBtn").addEventListener("click", downloadPNG);
+      document.getElementById("resetBtn").addEventListener("click", resetDefaults);
 
       window.addEventListener("beforeunload", () => {
         if (uploadedPhotoUrl) {
           URL.revokeObjectURL(uploadedPhotoUrl);
         }
       });
-}
+    }
 
-async function init() {
-bindEvents();
-refreshCharacterOptions();
-updateRangeLabels();
+    async function init() {
+      bindEvents();
+      refreshCharacterOptions();
+      updateRangeLabels();
       updateImageModeUI();
 
-templateImg.src = "assets/template.png";
+      templateImg.src = "assets/template.png";
 
-@@ -915,7 +1369,6 @@ <h1>메일 명함 생성기</h1>
-logoImages.hanyang = await loadImage(CONFIG.logos.hanyang.src);
+      await new Promise((resolve, reject) => {
+        templateImg.onload = resolve;
+        templateImg.onerror = reject;
+      });
 
-await updateCharacterAndDraw();
+      logoImages.erica = await loadImage(CONFIG.logos.erica.src);
+      logoImages.hanyang = await loadImage(CONFIG.logos.hanyang.src);
 
-drawCard();
-}
+      await updateCharacterAndDraw();
+      drawCard();
+    }
+
+    init().catch(err => {
+      console.error(err);
+      alert("초기화 실패. assets/template.png, 로고, 캐릭터 파일 경로를 확인해봐.");
+    });
+  </script>
+</body>
+</html>
