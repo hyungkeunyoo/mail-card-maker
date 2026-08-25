@@ -1,3948 +1,1058 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>행사용 명패 생성기</title>
+align-items: start;
+}
 
-  <style>
-    :root {
-      --ui-bg: #f3f5f8;
-      --ui-card: #ffffff;
-      --ui-line: #d9e0e8;
-      --ui-text: #1f2937;
-      --ui-muted: #667085;
-      --ui-primary: #0b4f87;
-      --ui-primary-dark: #083c67;
-      --ui-danger: #c93636;
-      --ui-success: #1d7a45;
+    .panel, .preview {
+    .panel,
+    .preview {
+background: #fff;
+border-radius: 16px;
+box-shadow: 0 8px 24px rgba(0,0,0,.08);
+@@ -55,18 +56,24 @@
+top: 24px;
+}
 
-      --plate-name-color: #07518a;
-      --plate-title-color: #07518a;
-      --plate-border: #07518a;
-
-      --plate-width: 250mm;
-      --plate-height: 80mm;
-      --plate-stack-height: 160mm;
-      --plate-fold-y: 80mm;
-      --plate-name-size: 78pt;
-      --plate-title-size: 27pt;
-      --plate-footer-size: 10pt;
-      --plate-name-spacing: 0.18em;
-
-      --plate-name-x: 0mm;
-      --plate-name-y: 0mm;
-      --plate-title-x: 0mm;
-      --plate-title-y: 0mm;
-      --plate-logo-width: 54mm;
-      --plate-logo-x: 0mm;
-      --plate-logo-y: 0mm;
-
-      --footer-logo-width: 58mm;
-      --footer-logo-x: 0mm;
-      --footer-logo-y: 0mm;
-
-      --plate-font: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo",
-                    "Malgun Gothic", Arial, sans-serif;
+    h1 { margin: 0 0 18px; font-size: 24px; }
+    h1 {
+      margin: 0 0 18px;
+      font-size: 24px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      background: var(--ui-bg);
-      color: var(--ui-text);
-      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo",
-                   "Malgun Gothic", Arial, sans-serif;
-    }
-
-    button, input, textarea, select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .app-header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 14px 20px;
-      background: rgba(255,255,255,.96);
-      border-bottom: 1px solid var(--ui-line);
-      backdrop-filter: blur(10px);
-    }
-
-    .brand {
-      min-width: 0;
-    }
-
-    .brand-line {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-size: 21px;
-      letter-spacing: -0.03em;
-    }
-
-    .version-badge {
-      padding: 3px 7px;
-      border-radius: 999px;
-      background: #eaf2f8;
-      color: var(--ui-primary);
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .brand p {
-      margin: 3px 0 0;
-      color: var(--ui-muted);
-      font-size: 13px;
-    }
-
-    .header-actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .app {
-      display: grid;
-      grid-template-columns: minmax(370px, 450px) minmax(0, 1fr);
-      height: calc(100vh - 72px);
-      min-height: 0;
-      overflow: hidden;
-    }
-
-    .panel {
-      height: 100%;
-      min-height: 0;
-      padding: 18px;
-      background: #fff;
-      border-right: 1px solid var(--ui-line);
-      overflow-y: auto;
-      overflow-x: hidden;
-      overscroll-behavior: contain;
-    }
-
-    .workspace {
-      position: sticky;
-      top: 0;
-      height: 100%;
-      min-width: 0;
-      min-height: 0;
-      padding: 22px;
-      overflow: auto;
-      align-self: start;
-    }
-
-    .section {
-      margin-bottom: 16px;
-      padding: 16px;
-      border: 1px solid var(--ui-line);
-      border-radius: 14px;
-      background: var(--ui-card);
-      box-shadow: 0 2px 10px rgba(15,23,42,.04);
-    }
-
-    .section h2 {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin: 0 0 12px;
-      font-size: 16px;
-    }
-
-    .section h3 {
-      margin: 14px 0 8px;
-      font-size: 14px;
-    }
-
-    .hint {
-      margin: -4px 0 12px;
-      color: var(--ui-muted);
-      font-size: 12px;
-      line-height: 1.55;
-    }
-
+    .field { margin-bottom: 14px; }
     .field {
-      display: grid;
-      gap: 6px;
-      margin-bottom: 11px;
-    }
-
-    .field:last-child {
-      margin-bottom: 0;
-    }
-
-    .field label,
-    .field-label {
-      color: #344054;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .field input[type="text"],
-    .field input[type="email"],
-    .field input[type="number"],
-    .field input[type="file"],
-    .field select,
-    .field textarea {
-      width: 100%;
-      border: 1px solid #cfd7e2;
-      border-radius: 9px;
-      background: #fff;
-      padding: 9px 10px;
-      color: var(--ui-text);
-      outline: none;
-    }
-
-    .field textarea {
-      min-height: 92px;
-      resize: vertical;
-      line-height: 1.5;
-    }
-
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus {
-      border-color: #4f8dbc;
-      box-shadow: 0 0 0 3px rgba(11,79,135,.10);
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .range-row {
-      display: grid;
-      grid-template-columns: 1fr 72px;
-      align-items: center;
-      gap: 9px;
-    }
-
-    input[type="range"] {
-      width: 100%;
-    }
-
-    .color-row {
-      display: grid;
-      grid-template-columns: 42px 1fr;
-      gap: 8px;
-      align-items: center;
-    }
-
-    input[type="color"] {
-      width: 42px;
-      height: 38px;
-      padding: 2px;
-      border: 1px solid #cfd7e2;
-      border-radius: 8px;
-      background: #fff;
-    }
-
-    .check-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      margin: 8px 0;
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    .check-row input {
-      margin-top: 2px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      min-height: 38px;
-      padding: 8px 12px;
-      border: 1px solid #cfd7e2;
-      border-radius: 9px;
-      background: #fff;
-      color: #253041;
-      font-weight: 700;
-      font-size: 13px;
-      text-decoration: none;
-      transition: .15s ease;
-    }
-
-    .btn:hover {
-      background: #f6f8fa;
-      transform: translateY(-1px);
-    }
-
-    .btn.primary {
-      border-color: var(--ui-primary);
-      background: var(--ui-primary);
-      color: #fff;
-    }
-
-    .btn.primary:hover {
-      background: var(--ui-primary-dark);
-    }
-
-    .btn.success {
-      border-color: var(--ui-success);
-      background: var(--ui-success);
-      color: #fff;
-    }
-
-    .btn.danger {
-      border-color: #f0caca;
-      color: var(--ui-danger);
-    }
-
-    .btn.small {
-      min-height: 31px;
-      padding: 5px 8px;
-      font-size: 12px;
-    }
-
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .bulk-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .people-wrap {
-      overflow: auto;
-      border: 1px solid var(--ui-line);
-      border-radius: 10px;
-    }
-
-    .people-table {
-      width: 100%;
-      min-width: 790px;
-      border-collapse: collapse;
-      font-size: 12px;
-    }
-
-    .people-table th,
-    .people-table td {
-      padding: 7px;
-      border-bottom: 1px solid #edf0f4;
-      text-align: left;
-      vertical-align: middle;
-    }
-
-    .people-table th {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      background: #f8fafc;
-      color: #475467;
-      font-size: 11px;
-    }
-
-    .people-table tr:last-child td {
-      border-bottom: 0;
-    }
-
-    .people-table input[type="text"],
-    .people-table select {
-      width: 100%;
-      min-width: 110px;
-      padding: 7px 8px;
-      border: 1px solid #d5dce5;
-      border-radius: 7px;
-      background: #fff;
-    }
-
-    .row-number {
-      width: 34px;
-      color: var(--ui-muted);
-      text-align: center !important;
-    }
-
-    .empty-message {
-      padding: 24px;
-      color: var(--ui-muted);
-      text-align: center;
-      font-size: 13px;
-    }
-
-    .logo-manager {
-      display: grid;
-      gap: 10px;
-    }
-
-    .custom-logo-add {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) auto;
-      gap: 8px;
-      align-items: end;
-    }
-
-    .custom-logo-list {
-      display: grid;
-      gap: 7px;
-    }
-
-    .custom-logo-item {
-      display: grid;
-      grid-template-columns: 48px minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 9px;
-      padding: 8px;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      background: #fafbfc;
-    }
-
-    .custom-logo-thumb {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 48px;
-      height: 38px;
-      overflow: hidden;
-      border: 1px solid #e2e8f0;
-      border-radius: 7px;
-      background: #fff;
-    }
-
-    .custom-logo-thumb img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-
-    .custom-logo-name {
-      min-width: 0;
-      overflow: hidden;
-      font-size: 12px;
-      font-weight: 700;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .built-in-note {
-      padding: 10px;
-      border-radius: 9px;
-      background: #f7fafc;
-      color: var(--ui-muted);
-      font-size: 11px;
-      line-height: 1.55;
-    }
-
-    .preview-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
       margin-bottom: 14px;
     }
 
-    .preview-title {
-      min-width: 0;
-    }
-
-    .preview-title h2 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .preview-title p {
-      margin: 4px 0 0;
-      color: var(--ui-muted);
-      font-size: 12px;
-    }
-
-    .page-navigation {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-    }
-
-    .page-counter {
-      min-width: 82px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .preview-zone {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      min-height: 620px;
-      padding: 18px;
-      border: 1px solid var(--ui-line);
-      border-radius: 16px;
-      background:
-        linear-gradient(45deg, #eef1f5 25%, transparent 25%) 0 0 / 24px 24px,
-        linear-gradient(45deg, transparent 75%, #eef1f5 75%) 0 0 / 24px 24px,
-        linear-gradient(45deg, transparent 75%, #eef1f5 75%) 12px -12px / 24px 24px,
-        linear-gradient(45deg, #eef1f5 25%, #f7f8fa 25%) 12px 12px / 24px 24px;
-      overflow: hidden;
-    }
-
-    .preview-scaler {
-      width: 297mm;
-      height: 210mm;
-      transform-origin: top center;
-    }
-
-    .paper-page {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 297mm;
-      height: 210mm;
-      background: #fff;
-      box-shadow: 0 12px 32px rgba(15,23,42,.18);
-      overflow: hidden;
-    }
-
-    .nameplate-stack {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      width: var(--plate-width);
-      height: var(--plate-stack-height);
-      gap: 0;
-      overflow: visible;
-    }
-
-    .nameplate-stack .nameplate {
-      flex: 0 0 var(--plate-height);
-    }
-
-    .fold-guide {
-      position: absolute;
-      z-index: 20;
-      left: 0;
-      right: 0;
-      top: var(--plate-fold-y);
-      height: 0;
-      border-top: 0.22mm dashed rgba(15, 23, 42, .28);
-      pointer-events: none;
-    }
-
-    .fold-guide-label {
-      position: absolute;
-      z-index: 21;
-      top: calc(var(--plate-fold-y) - 3.2mm);
-      left: 50%;
-      transform: translateX(-50%);
-      padding: .5mm 2mm;
-      border-radius: 999px;
-      background: rgba(255,255,255,.92);
-      color: #7b8794;
-      font-size: 6.5pt;
-      font-weight: 700;
-      letter-spacing: .02em;
-      pointer-events: none;
-    }
-
-    .nameplate {
-      position: relative;
-      width: var(--plate-width);
-      height: var(--plate-height);
-      border: 0.75mm solid var(--plate-border);
-      background: #fff;
-      color: var(--plate-name-color);
-      overflow: hidden;
-      font-family: var(--plate-font);
-    }
-
-    .nameplate.back-rotated {
-      transform: rotate(180deg);
-    }
-
-    .nameplate.has-template {
-      border: 0;
-      background: #fff;
-    }
-
-    .plate-template-bg {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
+.field label {
+      display:block;
+      font-size:14px;
+      margin-bottom:6px;
+      font-weight:700;
       display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: fill;
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .nameplate.has-template .plate-footer {
-      border-top: 0;
-    }
-
-    .nameplate.has-template .plate-footer::before {
-      display: none;
-    }
-
-    .plate-main {
-      position: absolute;
-      z-index: 1;
-      inset: 0 0 10mm 0;
-      display: grid;
-      grid-template-columns: 67mm minmax(0, 1fr);
-      align-items: stretch;
-    }
-
-    .logo-box {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 0;
-      padding: 5mm 4mm 3mm 6mm;
-    }
-
-    .logo-box img {
-      display: block;
-      width: var(--plate-logo-width);
-      max-width: 100%;
-      max-height: 62mm;
-      object-fit: contain;
-      transform: translate(var(--plate-logo-x), var(--plate-logo-y));
-    }
-
-    .logo-placeholder {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 49mm;
-      height: 49mm;
-      padding: 3mm;
-      border: 0.55mm dashed #b9c5d2;
-      border-radius: 5mm;
-      color: #9aa7b5;
-      font-size: 10pt;
-      font-weight: 800;
-      line-height: 1.35;
-      letter-spacing: .03em;
-      text-align: center;
-    }
-
-    .plate-text {
-      display: grid;
-      grid-template-rows: 29mm minmax(0, 1fr);
-      min-width: 0;
-      padding: 2.5mm 8mm 2mm 1mm;
-    }
-
-    .plate-title {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 0;
-      overflow: hidden;
-      padding: 2mm 1mm 0;
-      color: var(--plate-title-color);
-      font-size: var(--plate-title-size);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.035em;
-      white-space: nowrap;
-      text-align: center;
-      transform: translate(var(--plate-title-x), var(--plate-title-y));
-    }
-
-    .plate-name {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 0;
-      overflow: hidden;
-      padding: 0 1mm 3mm;
-      color: var(--plate-name-color);
-      font-size: var(--plate-name-size);
-      font-weight: 900;
-      line-height: 1;
-      letter-spacing: var(--plate-name-spacing);
-      white-space: nowrap;
-      text-align: center;
-      transform: translate(var(--plate-name-x), var(--plate-name-y));
-    }
-
-    .plate-footer {
-      position: absolute;
-      z-index: 1;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      height: 10mm;
-      border-top: 2.05mm solid var(--plate-border);
-      color: var(--plate-border);
-    }
-
-    .plate-footer::before {
-      content: "";
-      position: absolute;
-      top: -2.05mm;
-      right: 61mm;
-      width: 9mm;
-      height: 2.05mm;
-      background: #fff;
-      clip-path: polygon(100% 0, 0 100%, 100% 100%);
-    }
-
-    .footer-logo-box {
-      position: absolute;
-      right: 10mm;
-      top: 1.2mm;
-      width: var(--footer-logo-width);
-      height: 6.2mm;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      overflow: visible;
-      transform: translate(var(--footer-logo-x), var(--footer-logo-y));
-    }
-
-    .footer-logo-box img {
-      display: block;
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      object-position: right center;
-    }
-
-    .footer-logo-missing {
-      color: #98a2b3;
-      font-size: 6.5pt;
+      font-size: 14px;
+      margin-bottom: 6px;
       font-weight: 700;
-      white-space: nowrap;
-    }
+}
 
-    .page-label {
-      position: absolute;
-      top: 5mm;
-      left: 7mm;
-      color: #98a2b3;
-      font-size: 8pt;
-    }
+    .field input, .field select {
+    .field input,
+    .field select {
+width: 100%;
+padding: 11px 12px;
+border: 1px solid #d0d7de;
+@@ -76,84 +83,111 @@
+font-family: inherit;
+}
 
-    .thumbs {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-      padding: 4px 2px 10px;
-      overflow-x: auto;
-    }
-
-    .thumb {
-      flex: 0 0 auto;
-      min-width: 92px;
-      padding: 8px 10px;
-      border: 1px solid var(--ui-line);
-      border-radius: 9px;
-      background: #fff;
-      color: #344054;
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .thumb.active {
-      border-color: var(--ui-primary);
-      box-shadow: 0 0 0 2px rgba(11,79,135,.12);
-      color: var(--ui-primary);
-      font-weight: 800;
-    }
-
-    .status {
-      display: none;
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 999;
-      max-width: min(460px, calc(100vw - 36px));
-      padding: 11px 14px;
-      border-radius: 10px;
-      background: #152436;
-      color: #fff;
-      box-shadow: 0 10px 26px rgba(0,0,0,.22);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    .status.show {
-      display: block;
-    }
-
-
-    .template-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .template-card {
-      display: grid;
-      gap: 7px;
-      padding: 8px;
-      border: 1px solid #d7dee8;
-      border-radius: 10px;
-      background: #fff;
-      text-align: left;
-      transition: .15s ease;
-    }
-
-    .template-card:hover {
-      border-color: #89a9c6;
-      background: #f8fbfd;
-    }
-
-    .template-card.active {
-      border-color: var(--ui-primary);
-      box-shadow: 0 0 0 2px rgba(11,79,135,.12);
-      background: #f6fbff;
-    }
-
-    .template-thumb {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 3 / 1;
-      overflow: hidden;
-      border-radius: 6px;
-      background: #fff center / 100% 100% no-repeat;
-    }
-
-    .template-thumb.basic { border: 1px solid #0b4f87; }
-    .template-thumb.basic::before {
-      content: "";
-      position: absolute;
-      left: 24%;
-      top: 18%;
-      bottom: 21%;
-      width: 1px;
-      background: #a7b8c7;
-    }
-    .template-thumb.basic::after {
-      content: "";
-      position: absolute;
-      right: 0;
-      bottom: 8%;
-      left: 0;
-      height: 2px;
-      background: #0b4f87;
-    }
-    .template-thumb.minimal { background-image: url("assets/template-minimal.png"); }
-    .template-thumb.frame { background-image: url("assets/template-frame.png"); }
-    .template-thumb.gold { background-image: url("assets/template-gold.png"); }
-    .template-thumb.geometric { background-image: url("assets/template-geometric.png"); }
-
-    .template-card-title {
-      color: #344054;
-      font-size: 11px;
-      font-weight: 800;
-      line-height: 1.3;
-    }
-    .template-card-sub {
-      color: #98a2b3;
-      font-size: 10px;
-      line-height: 1.3;
-    }
-    .template-note {
-      margin: -3px 0 11px;
-      color: #667085;
-      font-size: 11px;
-      line-height: 1.55;
-    }
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-
-    .color-simple-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .palette-toolbar {
-      display: grid;
-      grid-template-columns: 145px minmax(0, 1fr);
-      gap: 9px;
-      align-items: center;
-      margin: 6px 0 12px;
-    }
-
-    .palette-swatches {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-    }
-
-    .palette-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 31px;
-      padding: 5px 8px;
-      border: 1px solid #d8e0e8;
-      border-radius: 999px;
-      background: #fff;
-      color: #344054;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .palette-chip:hover {
-      border-color: #9db0c2;
-      background: #f8fafc;
-    }
-
-    .palette-dot {
-      width: 14px;
-      height: 14px;
-      flex: 0 0 14px;
-      border: 1px solid rgba(0,0,0,.15);
-      border-radius: 50%;
-      background: var(--chip-color);
-    }
-
-    .advanced-colors {
-      margin: 4px 0 12px;
-      border: 1px solid #e1e7ee;
-      border-radius: 10px;
-      background: #fafbfc;
-      overflow: hidden;
-    }
-
-    .advanced-colors summary {
-      padding: 10px 12px;
-      color: #475467;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .advanced-color-body {
-      padding: 0 12px 12px;
-    }
-
-    .mixed-color-note {
-      margin-top: 5px;
-      color: #8a6c22;
-      font-size: 10px;
-      line-height: 1.4;
-    }
-
-
-    .size-preset-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 110px 110px;
-      gap: 9px;
-      align-items: end;
-    }
-
-    .size-summary {
-      margin-top: 8px;
+    .field input[type="file"] {
       padding: 9px 10px;
-      border: 1px solid #e1e7ee;
-      border-radius: 9px;
-      background: #f8fafc;
-      color: #475467;
-      font-size: 11px;
-      line-height: 1.55;
     }
 
-    .size-summary strong {
-      color: #172b3f;
-    }
-
-    .size-warning {
-      margin-top: 7px;
-      color: #b42318;
-      font-size: 11px;
-      font-weight: 700;
-      line-height: 1.45;
-    }
-
-
-    .settings-action-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .settings-lock-status {
-      margin-top: 8px;
-      min-height: 17px;
-      color: #667085;
-      font-size: 11px;
-      line-height: 1.45;
-    }
-
-    .settings-lock-status.locked {
-      color: #9f4a14;
-      font-weight: 800;
-    }
-
-    body.settings-locked [data-settings-section] {
-      position: relative;
-    }
-
-    body.settings-locked [data-settings-section]::after {
-      content: "설정 잠금 중";
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      z-index: 10;
-      padding: 3px 7px;
-      border: 1px solid #ead7bd;
-      border-radius: 999px;
-      background: #fff8ed;
-      color: #9f4a14;
-      font-size: 10px;
-      font-weight: 800;
-      pointer-events: none;
-    }
-
-    .cut-mark {
-      position: absolute;
-      z-index: 40;
-      width: 6mm;
-      height: 6mm;
-      pointer-events: none;
-      box-sizing: border-box;
-    }
-
-    .cut-mark.tl {
-      left: -4mm;
-      top: -4mm;
-      border-top: .18mm solid #111;
-      border-left: .18mm solid #111;
-    }
-
-    .cut-mark.tr {
-      right: -4mm;
-      top: -4mm;
-      border-top: .18mm solid #111;
-      border-right: .18mm solid #111;
-    }
-
-    .cut-mark.bl {
-      left: -4mm;
-      bottom: -4mm;
-      border-bottom: .18mm solid #111;
-      border-left: .18mm solid #111;
-    }
-
-    .cut-mark.br {
-      right: -4mm;
-      bottom: -4mm;
-      border-bottom: .18mm solid #111;
-      border-right: .18mm solid #111;
-    }
-
-    .test-print-page {
-      gap: 16mm;
-      color: #111;
-    }
-
-    .test-print-head {
-      text-align: center;
-      font-size: 13pt;
-      font-weight: 800;
-      line-height: 1.45;
-    }
-
-    .test-print-sub {
-      margin-top: 2mm;
-      color: #555;
-      font-size: 9pt;
-      font-weight: 500;
-    }
-
-    .test-ruler-wrap {
+.two {
+      display:grid;
       display: grid;
-      justify-items: center;
-      gap: 4mm;
+grid-template-columns: 1fr 1fr;
+      gap:10px;
+      gap: 10px;
+}
+
+.btn-row {
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+      flex-wrap:wrap;
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+}
+
+button {
+      border:0;
+      border-radius:10px;
+      padding:12px 16px;
+      cursor:pointer;
+      font-size:14px;
+      font-weight:700;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+font-family: inherit;
+}
+
+    .btn-primary { background:#0f4c81; color:#fff; }
+    .btn-secondary { background:#e5e7eb; color:#111827; }
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .45;
     }
 
-    .test-ruler-line {
-      position: relative;
-      width: 100mm;
-      height: 0;
-      border-top: .35mm solid #111;
+    .btn-primary {
+      background: #0f4c81;
+      color: #fff;
     }
 
-    .test-ruler-line::before,
-    .test-ruler-line::after {
-      content: "";
-      position: absolute;
-      top: -2.3mm;
-      width: .35mm;
-      height: 4.6mm;
-      background: #111;
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
     }
 
-    .test-ruler-line::before {
-      left: 0;
+.preview-title {
+      margin:0 0 14px;
+      font-size:18px;
+      font-weight:700;
+      margin: 0 0 14px;
+      font-size: 18px;
+      font-weight: 700;
+}
+
+.preview canvas {
+      width:100%;
+      height:auto;
+      border:1px solid #ddd;
+      background:#fff;
+      width: 100%;
+      height: auto;
+      border: 1px solid #ddd;
+      background: #fff;
+      display: block;
+}
+
+    .char-preview {
+      height:110px;
+      border:1px solid #d0d7de;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin-top:8px;
+      background:#fff;
+    .asset-preview {
+      height: 110px;
+      border: 1px solid #d0d7de;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+      background: #fff;
+      overflow: hidden;
+}
+
+    .char-preview img {
+      max-width:90px;
+      max-height:90px;
+      object-fit:contain;
+    .asset-preview img {
+      max-width: 90px;
+      max-height: 90px;
+      object-fit: contain;
     }
 
-    .test-ruler-line::after {
-      right: 0;
+    .photo-preview img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 12px;
+}
+
+.range-field {
+      margin:18px 0;
+      margin: 18px 0;
+padding-top: 4px;
+}
+
+.range-field > label {
+      display:block;
+      font-size:14px;
+      margin-bottom:8px;
+      font-weight:700;
+      display: block;
+      font-size: 14px;
+      margin-bottom: 8px;
+      font-weight: 700;
+}
+
+.range-row {
+      display:grid;
+      grid-template-columns:42px 1fr 52px;
+      gap:8px;
+      align-items:center;
+      font-size:13px;
+      margin-top:8px;
+      display: grid;
+      grid-template-columns: 42px 1fr 52px;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+      margin-top: 8px;
+}
+
+    .range-row input { width:100%; }
+    .range-row input {
+      width: 100%;
     }
 
-    .test-ruler-label {
-      font-size: 10pt;
+.check-group {
+margin: 16px 0;
+@@ -183,17 +217,121 @@
+cursor: pointer;
+}
+
+    .mode-box {
+      margin: 18px 0 16px;
+      padding: 14px;
+      border: 1px solid #bfd0df;
+      border-radius: 12px;
+      background: #f7fbff;
+    }
+
+    .mode-box .field {
+      margin-bottom: 0;
+    }
+
+    .section-box {
+      padding: 14px;
+      border: 1px solid #d0d7de;
+      border-radius: 12px;
+      background: #fafafa;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 15px;
       font-weight: 800;
-      letter-spacing: .02em;
     }
 
     .privacy-note {
       margin-top: 10px;
-      padding: 10px;
-      border-radius: 9px;
-      background: #f7fafc;
-      color: var(--ui-muted);
-      font-size: 11px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #eef7ee;
+      color: #285c2f;
+      font-size: 13px;
       line-height: 1.55;
     }
 
-    details.patch {
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      background: #fafbfc;
-      overflow: hidden;
+.help {
+      margin-top:8px;
+      font-size:13px;
+      color:#666;
+      line-height:1.55;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.55;
     }
 
-    details.patch summary {
-      padding: 10px 12px;
-      font-size: 12px;
+    .hidden {
+      display: none !important;
+    }
+
+    .patch-notes {
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid #d0d7de;
+      border-radius: 12px;
+      background: #fafafa;
+    }
+
+    .patch-notes-title {
+      margin: 0 0 12px;
+      font-size: 17px;
       font-weight: 800;
-      cursor: pointer;
-      user-select: none;
+      color: #0f4c81;
     }
 
-    .patch-body {
-      padding: 0 12px 12px;
-      color: #475467;
-      font-size: 12px;
+    .patch-item + .patch-item {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #e5e7eb;
+}
+
+    @media (max-width:1100px) {
+      .wrap { grid-template-columns: 1fr; }
+      .preview { position: static; }
+      .panel { max-height: none; overflow-y: visible; }
+    .patch-date {
+      display: inline-block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #555;
+    }
+
+    .patch-item ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #444;
+      font-size: 14px;
       line-height: 1.65;
     }
 
-    .patch-item {
-      padding: 8px 0;
-      border-top: 1px solid #edf0f4;
-    }
-
-    .patch-version {
-      font-weight: 800;
-      color: var(--ui-primary);
-    }
-
-    .feedback-box {
-      display: grid;
-      gap: 9px;
-    }
-
-    .feedback-help {
-      padding: 9px 10px;
-      border-radius: 9px;
-      background: #fff9e7;
-      color: #725b14;
-      font-size: 11px;
-      line-height: 1.55;
-    }
-
-    .print-stage {
-      position: fixed;
-      left: -100000px;
-      top: 0;
-      visibility: hidden;
-    }
-
-    @media (max-width: 1050px) {
-      .app {
+    @media (max-width: 1100px) {
+      .wrap {
         grid-template-columns: 1fr;
-        height: auto;
-        min-height: 0;
-        overflow: visible;
+      }
+
+      .preview {
+        position: static;
       }
 
       .panel {
-        height: auto;
-        overflow: visible;
-        border-right: 0;
-        border-bottom: 1px solid var(--ui-line);
-      }
-
-      .workspace {
-        position: static;
-        height: auto;
-        overflow: visible;
-      }
-
-      .preview-zone {
-        min-height: 480px;
+        max-height: none;
+        overflow-y: visible;
       }
     }
 
-    @media (max-width: 650px) {
-      .app-header {
-        align-items: flex-start;
-        flex-direction: column;
+    @media (max-width: 560px) {
+      .wrap {
+        padding: 0 12px;
+        margin: 12px auto;
       }
 
-      .header-actions {
-        width: 100%;
-        justify-content: stretch;
+      .panel,
+      .preview {
+        padding: 16px;
+        border-radius: 12px;
       }
 
-      .header-actions .btn {
-        flex: 1;
-      }
-
-      .panel, .workspace {
-        padding: 12px;
-      }
-
-      .grid-2,
-      .grid-3,
-      .color-simple-grid,
-      .template-grid,
-      .palette-toolbar,
-      .size-preset-grid,
-      .custom-logo-add {
+      .two,
+      .check-grid {
         grid-template-columns: 1fr;
       }
-
-      .preview-toolbar {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-    }
-
-    @page {
-      size: A4 landscape;
-      margin: 0;
-    }
-
-    @media print {
-      html, body {
-        width: 297mm;
-        min-height: 210mm;
-        margin: 0 !important;
-        background: #fff !important;
-      }
-
-      body > *:not(.print-stage) {
-        display: none !important;
-      }
-
-      .print-stage {
-        position: static !important;
-        left: auto !important;
-        top: auto !important;
-        display: block !important;
-        visibility: visible !important;
-      }
-
-      .print-stage .paper-page {
-        display: flex;
-        width: 297mm !important;
-        height: 210mm !important;
-        margin: 0 !important;
-        box-shadow: none !important;
-        page-break-after: always;
-        break-after: page;
-      }
-
-      .print-stage .paper-page:last-child {
-        page-break-after: auto;
-        break-after: auto;
-      }
-
-      body.print-current .print-stage .paper-page:not(.is-current) {
-        display: none !important;
-      }
-
-      .page-label,
-      .logo-placeholder,
-      .fold-guide,
-      .fold-guide-label {
-        display: none !important;
-      }
-
-      .nameplate {
-        print-color-adjust: exact;
-        -webkit-print-color-adjust: exact;
-      }
-    }
-  </style>
+}
+</style>
 </head>
+@@ -266,34 +404,120 @@ <h1>메일 명함 생성기</h1>
+</div>
+</div>
 
-<body>
-  <header class="app-header">
-    <div class="brand">
-      <div class="brand-line">
-        <h1>행사용 명패 생성기</h1>
-        <span class="version-badge">v2.8.1</span>
+      <div class="two">
+      <div class="mode-box">
+<div class="field">
+          <label for="category">캐릭터 분류</label>
+           <select id="category">
+            <option value="all">전체</option>
+            <option value="hanyangi">하냥이</option>
+            <option value="college">단과대학</option>
+            <option value="hibibi">하이비비</option>
+            <option value="hylion">하이리온</option>
+            <option value="hynari">하이나리</option>
+</select>        </div>
+
+        <div class="field">
+          <label for="character">캐릭터</label>
+          <select id="character"></select>
+          <label for="imageMode">오른쪽 이미지 유형</label>
+          <select id="imageMode">
+            <option value="character">캐릭터 사용</option>
+            <option value="photo">내 사진 사용</option>
+            <option value="none">이미지 사용 안 함</option>
+          </select>
+</div>
+</div>
+
+      <div class="btn-row">
+        <button class="btn-secondary" id="prevBtn" type="button">이전</button>
+        <button class="btn-secondary" id="nextBtn" type="button">다음</button>
       </div>
-      <p>명단 붙여넣기 → 명패 디자인 선택 → 로고·글자색 설정 → A4 양면 명패 자동 생성</p>
-    </div>
+      <div id="characterControls" class="section-box">
+        <p class="section-title">캐릭터 설정</p>
 
-    <div class="header-actions">
-      <button class="btn" id="saveProjectBtn">작업 저장</button>
-      <button class="btn" id="loadProjectBtn">작업 불러오기</button>
-      <button class="btn" id="printCurrentBtn">현재 1장 인쇄</button>
-      <button class="btn primary" id="printAllBtn">전체 인쇄·PDF</button>
-    </div>
-  </header>
-
-  <main class="app">
-    <aside class="panel">
-
-<section class="section" data-settings-section>
-        <h2>인쇄 설정</h2>
-
-        <div class="field">
-          <label for="platePreset">명패 규격</label>
-
-          <div class="size-preset-grid">
-            <select id="platePreset">
-              <option value="200x70">소형 · 200 × 70 mm</option>
-              <option value="200x80">중형 · 200 × 80 mm</option>
-              <option value="250x80" selected>대형 · 250 × 80 mm</option>
-              <option value="255x85">대형+ · 255 × 85 mm</option>
-              <option value="custom">사용자 지정</option>
-            </select>
-
-            <div class="field" style="margin:0;">
-              <label for="plateWidth">가로 mm</label>
-              <input type="number" id="plateWidth" min="100" max="290" step="1" value="250" />
-            </div>
-
-            <div class="field" style="margin:0;">
-              <label for="plateHeight">세로 mm</label>
-              <input type="number" id="plateHeight" min="45" max="100" step="1" value="80" />
-            </div>
-          </div>
-
-          <div class="size-summary" id="plateSizeSummary">
-            명패 1면 <strong>250 × 80mm</strong> · 양면 연속 출력 <strong>250 × 160mm</strong>
-          </div>
-          <div class="size-warning" id="plateSizeWarning"></div>
-        </div>
-
-        <div class="field" style="margin-top:12px;">
-          <label class="check-row">
-            <input type="checkbox" id="autoScaleElements" checked />
-            <span>명패 규격 변경 시 글자·로고를 자동 비례 조정</span>
-          </label>
-
-          <label class="check-row">
-            <input type="checkbox" id="showCutMarks" />
-            <span>인쇄할 때 재단선 표시</span>
-          </label>
-        </div>
-
-        <div class="settings-action-row">
-          <button type="button" class="btn small" id="testPrintBtn" data-lock-exempt="true">100mm 테스트 인쇄</button>
-          <button type="button" class="btn small" id="resetAdjustmentsBtn">위치·크기 초기화</button>
-          <button type="button" class="btn small" id="settingsLockBtn" data-lock-exempt="true">설정 잠금</button>
-        </div>
-
-        <div class="settings-lock-status" id="settingsLockStatus"></div>
-
-        <p class="hint" style="margin-bottom:0;">
-          인쇄창에서 <strong>A4 · 가로 · 배율 100% · 여백 없음 · 머리글/바닥글 해제</strong>로 설정하세요.
-          선택한 규격의 앞·뒷면을 붙여 한 사람당 A4 한 페이지에 출력합니다.
-        </p>
-      </section>
-
-      <section class="section">
-        <h2>
-          <span>1. 명단 입력</span>
-          <span id="peopleCount" style="font-size:12px;color:#667085;">0명</span>
-        </h2>
-
-        <p class="hint">
-          엑셀에서 <strong>이름 · 소속 · 직책 · 좌측 로고</strong> 순서로 복사해 붙여넣을 수 있습니다.
-          로고 열을 비우면 기본값인 <strong>한양대학교 로고</strong>가 적용됩니다.
-          외부기관 로고를 먼저 등록한 뒤 기관명을 4번째 열에 넣으면 사람별로 자동 지정됩니다.
-        </p>
-
-        <div class="field">
-          <label for="bulkInput">엑셀·CSV 붙여넣기</label>
-          <textarea id="bulkInput" placeholder="홍길동&#9;한양대학교&#9;총장&#9;한양대학교&#10;김ERICA&#9;한양대학교 ERICA&#9;처장&#9;기본&#10;이협력&#9;ABC주식회사&#9;대표&#9;ABC주식회사"></textarea>
-        </div>
-
-        <div class="bulk-actions">
-          <button class="btn primary" id="replaceBulkBtn">붙여넣은 명단으로 교체</button>
-          <button class="btn" id="appendBulkBtn">기존 명단 뒤에 추가</button>
-          <button class="btn" id="addPersonBtn">빈 행 1개 추가</button>
-          <button class="btn" id="csvImportBtn">CSV·TSV 파일 불러오기</button>
-        </div>
-
-        <input type="file" id="csvFileInput" accept=".csv,.tsv,.txt" hidden />
-
-        <h3>현재 명단</h3>
-
-        <div class="people-wrap">
-          <table class="people-table" aria-label="명패 대상자 명단">
-            <thead>
-              <tr>
-                <th class="row-number">#</th>
-                <th>이름</th>
-                <th>소속·기관</th>
-                <th>직책·직위</th>
-                <th>좌측 로고</th>
-                <th style="width:55px;">삭제</th>
-              </tr>
-            </thead>
-            <tbody id="peopleTableBody"></tbody>
-          </table>
-
-          <div class="empty-message" id="emptyMessage">명단이 없습니다.</div>
-        </div>
-
-        <div class="btn-row" style="margin-top:10px;">
-          <button class="btn danger small" id="clearPeopleBtn">명단 전체 삭제</button>
-        </div>
-      </section>
-
-      <section class="section" data-settings-section>
-        <h2>2. 로고 설정</h2>
-
-        <div class="logo-manager">
+        <div class="two">
           <div class="field">
-            <label for="defaultLeftLogo">좌측 기본 로고</label>
-            <select id="defaultLeftLogo">
-              <option value="hanyang">한양대학교</option>
-              <option value="none">로고 없음</option>
+            <label for="category">캐릭터 분류</label>
+            <select id="category">
+              <option value="all">전체</option>
+              <option value="hanyangi">하냥이</option>
+              <option value="college">단과대학</option>
+              <option value="hibibi">하이비비</option>
+              <option value="hylion">하이리온</option>
+              <option value="hynari">하이나리</option>
             </select>
           </div>
 
-          <div class="built-in-note">
-            한양대학교 좌측 기본 로고 파일<br>
-            · <strong>assets/hanyang-logo.png</strong><br>
-            명단에서 별도 로고를 지정하지 않으면 이 로고가 기본으로 적용됩니다.
-          </div>
-
-          <h3>좌측 로고 크기·위치</h3>
-
           <div class="field">
-            <label for="logoWidth">좌측 로고 크기</label>
-            <div class="range-row">
-              <input type="range" id="logoWidth" min="20" max="65" value="54" />
-              <input type="number" id="logoWidthNumber" min="20" max="65" value="54" />
-            </div>
+            <label for="character">캐릭터</label>
+            <select id="character"></select>
           </div>
+        </div>
 
-          <div class="field">
-            <label for="logoX">좌측 로고 좌우 위치</label>
-            <div class="range-row">
-              <input type="range" id="logoX" min="-25" max="25" step="1" value="0" />
-              <input type="number" id="logoXNumber" min="-25" max="25" step="1" value="0" />
-            </div>
+      <div class="char-preview">
+        <img id="charPreview" alt="캐릭터 미리보기" />
+        <div class="btn-row">
+          <button class="btn-secondary" id="prevBtn" type="button">이전</button>
+          <button class="btn-secondary" id="nextBtn" type="button">다음</button>
+        </div>
+
+        <div class="asset-preview">
+          <img id="charPreview" alt="캐릭터 미리보기" />
+        </div>
+
+        <div class="help" id="charCountInfo"></div>
+
+        <div class="range-field">
+          <label>캐릭터 위치/크기 미세조정</label>
+          <div class="range-row">
+            <span>좌우</span>
+            <input id="charOffsetX" type="range" min="-250" max="250" value="0" />
+            <span id="charOffsetXValue">0</span>
           </div>
-
-          <div class="field">
-            <label for="logoY">좌측 로고 상하 위치</label>
-            <div class="range-row">
-              <input type="range" id="logoY" min="-20" max="20" step="1" value="0" />
-              <input type="number" id="logoYNumber" min="-20" max="20" step="1" value="0" />
-            </div>
+          <div class="range-row">
+            <span>상하</span>
+            <input id="charOffsetY" type="range" min="-250" max="250" value="0" />
+            <span id="charOffsetYValue">0</span>
           </div>
-
-          <h3>외부기관 좌측 로고 추가</h3>
-
-          <div class="custom-logo-add">
-            <div class="field" style="margin:0;">
-              <label for="customLogoName">기관명</label>
-              <input type="text" id="customLogoName" placeholder="예: 안산시 / ABC주식회사" />
-            </div>
-
-            <div class="field" style="margin:0;">
-              <label for="customLogoFile">로고 파일</label>
-              <input type="file" id="customLogoFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" />
-            </div>
-
-            <button class="btn success" id="addCustomLogoBtn">추가</button>
+          <div class="range-row">
+            <span>크기</span>
+            <input id="charScale" type="range" min="40" max="160" value="100" />
+            <span id="charScaleValue">100</span>
           </div>
+        </div>
+</div>
 
-          <div class="custom-logo-list" id="customLogoList"></div>
+      <div class="help" id="charCountInfo"></div>
+      <div id="photoControls" class="section-box hidden">
+        <p class="section-title">내 사진 설정</p>
 
+        <div class="field">
+          <label for="photoUpload">사진 파일 선택</label>
+          <input
+            id="photoUpload"
+            type="file"
+            accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
+          />
           <div class="privacy-note">
-            외부기관 로고는 서버로 전송하지 않고 현재 브라우저 안에서만 처리합니다.
-            작업 저장 기능을 이용하면 외부기관 로고도 JSON 작업 파일 안에 함께 저장됩니다.
+            선택한 사진 파일은 서버에 업로드되거나 저장되지 않고, 현재 브라우저에서 명함 제작에만 사용됨.
+            사진 파일명과 사진 내용은 다운로드 통계에도 포함되지 않음.
           </div>
-
-          <h3>하단 로고</h3>
-
-          <div class="field">
-            <label for="footerLogo">하단 로고 선택</label>
-            <select id="footerLogo">
-              <option value="hanyang">한양대학교</option>
-              <option value="erica">한양대학교 ERICA</option>
-            </select>
-          </div>
-
-          <div class="built-in-note">
-            하단 로고 파일 경로<br>
-            · 한양대학교: <strong>assets/footer-hanyang.png</strong><br>
-            · 한양대학교 ERICA: <strong>assets/footer-erica.png</strong>
-          </div>
-
-          <h3>하단 로고 크기·위치</h3>
-
-          <div class="field">
-            <label for="footerLogoWidth">하단 로고 크기</label>
-            <div class="range-row">
-              <input type="range" id="footerLogoWidth" min="20" max="90" value="58" />
-              <input type="number" id="footerLogoWidthNumber" min="20" max="90" value="58" />
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="footerLogoX">하단 로고 좌우 위치</label>
-            <div class="range-row">
-              <input type="range" id="footerLogoX" min="-35" max="35" step="1" value="0" />
-              <input type="number" id="footerLogoXNumber" min="-35" max="35" step="1" value="0" />
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="footerLogoY">하단 로고 상하 위치</label>
-            <div class="range-row">
-              <input type="range" id="footerLogoY" min="-15" max="15" step="0.5" value="0" />
-              <input type="number" id="footerLogoYNumber" min="-15" max="15" step="0.5" value="0" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-settings-section>
-        <h2>3. 문구와 디자인</h2>
-
-        <div class="field">
-          <label>명패 디자인</label>
-
-          <div class="template-grid" id="templateGrid">
-            <button type="button" class="template-card active" data-template="basic">
-              <span class="template-thumb basic"></span>
-              <span class="template-card-title">기본형</span>
-              <span class="template-card-sub">기존 한양블루 명패</span>
-            </button>
-            <button type="button" class="template-card" data-template="minimal">
-              <span class="template-thumb minimal"></span>
-              <span class="template-card-title">모던 미니멀</span>
-              <span class="template-card-sub">얇은 선 중심의 심플형</span>
-            </button>
-            <button type="button" class="template-card" data-template="frame">
-              <span class="template-thumb frame"></span>
-              <span class="template-card-title">네이비 프레임</span>
-              <span class="template-card-sub">격식 있는 프레임형</span>
-            </button>
-            <button type="button" class="template-card" data-template="gold">
-              <span class="template-thumb gold"></span>
-              <span class="template-card-title">골드 클래식</span>
-              <span class="template-card-sub">VIP·협약식 등에 어울리는 골드형</span>
-            </button>
-            <button type="button" class="template-card" data-template="geometric">
-              <span class="template-thumb geometric"></span>
-              <span class="template-card-title">블루 지오메트릭</span>
-              <span class="template-card-sub">사선 포인트의 현대적인 형태</span>
-            </button>
-          </div>
-
-          <div class="btn-row">
-            <button type="button" class="btn small" id="recommendedColorBtn">이 디자인 추천 색상 적용</button>
-          </div>
-        </div>
-
-        <div class="template-note">
-          디자인을 바꾸면 해당 디자인의 추천 글자색을 자동 적용합니다.
-          이후 아래 색상에서 원하는 색으로 다시 바꿀 수 있습니다.
         </div>
 
         <div class="field">
-          <label for="titleSeparator">소속과 직책 사이</label>
-          <select id="titleSeparator">
-            <option value=" ">공백 1칸</option>
-            <option value=" · ">가운데점</option>
-            <option value=" | ">세로선</option>
-            <option value="__LINE_BREAK__">줄바꿈</option>
+          <label for="photoShape">사진 모양</label>
+          <select id="photoShape">
+            <option value="rounded">둥근 사각형</option>
+            <option value="square">사각형</option>
+            <option value="circle">원형</option>
           </select>
         </div>
 
-        <div class="color-simple-grid">
-          <div class="field">
-            <label for="overallTextColor">글자색</label>
-            <div class="color-row">
-              <input type="color" id="overallTextColor" value="#07518a" />
-              <input type="text" id="overallTextColorHex" value="#07518a" />
-            </div>
-            <div class="mixed-color-note" id="mixedColorNote"></div>
-          </div>
-
-          <div class="field">
-            <label for="borderColor">선·외곽선색 (기본형)</label>
-            <div class="color-row">
-              <input type="color" id="borderColor" value="#07518a" />
-              <input type="text" id="borderColorHex" value="#07518a" />
-            </div>
-          </div>
+        <div class="asset-preview photo-preview">
+          <img id="photoPreview" alt="업로드한 사진 미리보기" />
         </div>
 
-        <div class="field">
-          <label>대표색 빠른 선택</label>
-          <div class="palette-toolbar">
-            <select id="paletteTarget">
-              <option value="text">글자 전체</option>
-              <option value="border">선·외곽선</option>
-              <option value="name">이름만</option>
-              <option value="title">소속·직책만</option>
-            </select>
+        <div class="help">PNG, JPG, JPEG, WEBP 파일을 사용할 수 있음. 사진을 바꾸려면 새 파일을 다시 선택하면 됨.</div>
 
-            <div class="palette-swatches" id="paletteSwatches">
-              <button type="button" class="palette-chip" data-color="#07518a" data-label="한양블루"><span class="palette-dot" style="--chip-color:#07518a;"></span>한양블루</button>
-              <button type="button" class="palette-chip" data-color="#0a3768" data-label="딥 네이비"><span class="palette-dot" style="--chip-color:#0a3768;"></span>딥 네이비</button>
-              <button type="button" class="palette-chip" data-color="#111111" data-label="블랙"><span class="palette-dot" style="--chip-color:#111111;"></span>블랙</button>
-              <button type="button" class="palette-chip" data-color="#3b4148" data-label="차콜"><span class="palette-dot" style="--chip-color:#3b4148;"></span>차콜</button>
-              <button type="button" class="palette-chip" data-color="#b4892d" data-label="골드"><span class="palette-dot" style="--chip-color:#b4892d;"></span>골드</button>
-              <button type="button" class="palette-chip" data-color="#7a2232" data-label="버건디"><span class="palette-dot" style="--chip-color:#7a2232;"></span>버건디</button>
-              <button type="button" class="palette-chip" data-color="#1f5b48" data-label="딥그린"><span class="palette-dot" style="--chip-color:#1f5b48;"></span>딥그린</button>
-              <button type="button" class="palette-chip" data-color="#7b8794" data-label="그레이"><span class="palette-dot" style="--chip-color:#7b8794;"></span>그레이</button>
-            </div>
-          </div>
-        </div>
-
-        <details class="advanced-colors">
-          <summary>세부 글자 색상 설정</summary>
-          <div class="advanced-color-body">
-            <div class="grid-2">
-              <div class="field">
-                <label for="nameColor">이름 색상</label>
-                <div class="color-row">
-                  <input type="color" id="nameColor" value="#07518a" />
-                  <input type="text" id="nameColorHex" value="#07518a" />
-                </div>
-              </div>
-
-              <div class="field">
-                <label for="titleColor">소속·직책 색상</label>
-                <div class="color-row">
-                  <input type="color" id="titleColor" value="#07518a" />
-                  <input type="text" id="titleColorHex" value="#07518a" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </details>
-
-        <div class="field">
-          <label for="nameSize">이름 크기</label>
+        <div class="range-field">
+          <label>사진 위치/크기 미세조정</label>
           <div class="range-row">
-            <input type="range" id="nameSize" min="40" max="105" value="78" />
-            <input type="number" id="nameSizeNumber" min="40" max="105" value="78" />
+            <span>좌우</span>
+            <input id="photoOffsetX" type="range" min="-350" max="350" value="0" />
+            <span id="photoOffsetXValue">0</span>
           </div>
-        </div>
-
-        <div class="field">
-          <label for="nameX">이름 좌우 위치</label>
           <div class="range-row">
-            <input type="range" id="nameX" min="-35" max="35" step="1" value="0" />
-            <input type="number" id="nameXNumber" min="-35" max="35" step="1" value="0" />
+            <span>상하</span>
+            <input id="photoOffsetY" type="range" min="-350" max="350" value="0" />
+            <span id="photoOffsetYValue">0</span>
           </div>
-        </div>
-
-        <div class="field">
-          <label for="nameY">이름 상하 위치</label>
           <div class="range-row">
-            <input type="range" id="nameY" min="-20" max="20" step="1" value="0" />
-            <input type="number" id="nameYNumber" min="-20" max="20" step="1" value="0" />
+            <span>확대</span>
+            <input id="photoScale" type="range" min="100" max="300" value="100" />
+            <span id="photoScaleValue">100</span>
           </div>
-        </div>
-
-        <div class="field">
-          <label for="titleSize">상단 문구 크기</label>
-          <div class="range-row">
-            <input type="range" id="titleSize" min="15" max="44" value="27" />
-            <input type="number" id="titleSizeNumber" min="15" max="44" value="27" />
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="titleX">상단 문구 좌우 위치</label>
-          <div class="range-row">
-            <input type="range" id="titleX" min="-35" max="35" step="1" value="0" />
-            <input type="number" id="titleXNumber" min="-35" max="35" step="1" value="0" />
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="titleY">상단 문구 상하 위치</label>
-          <div class="range-row">
-            <input type="range" id="titleY" min="-18" max="18" step="1" value="0" />
-            <input type="number" id="titleYNumber" min="-18" max="18" step="1" value="0" />
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="nameSpacing">이름 자간</label>
-          <div class="range-row">
-            <input type="range" id="nameSpacing" min="-2" max="35" value="18" />
-            <input type="number" id="nameSpacingNumber" min="-2" max="35" value="18" />
-          </div>
-        </div>
-<label class="check-row">
-          <input type="checkbox" id="autoFit" checked />
-          <span>긴 이름과 상단 문구는 지정 크기에서 자동으로 축소</span>
-        </label>
-
-        <label class="check-row">
-          <input type="checkbox" id="rotateBack" checked />
-          <span>위쪽 명패를 180도 회전 (명패케이스용 권장)</span>
-        </label>
-
-        <label class="check-row">
-          <input type="checkbox" id="showPageLabel" />
-          <span>화면 미리보기에 페이지 번호 표시</span>
-        </label>
-
-        <div class="btn-row" style="margin-top:12px;">
-          <button class="btn small" id="saveDesignBtn">디자인 기본값 저장</button>
-          <button class="btn small" id="resetDesignBtn">디자인 초기화</button>
-        </div>
-      </section>
-
-      <section class="section">
-        <h2>4. 수정요청 · 불편사항</h2>
-
-        <div class="feedback-box">
-          <div class="grid-2">
-            <div class="field">
-              <label for="feedbackType">종류</label>
-              <select id="feedbackType">
-                <option value="불편사항">불편사항</option>
-                <option value="기능추가">기능 추가 요청</option>
-                <option value="오류">오류 신고</option>
-                <option value="디자인">디자인 의견</option>
-                <option value="기타">기타</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="feedbackName">작성자·부서 (선택)</label>
-              <input type="text" id="feedbackName" placeholder="예: 발전협력팀 홍길동" />
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="feedbackText">내용</label>
-            <textarea id="feedbackText" placeholder="예: 50명 입력할 때 로고를 한 번에 바꾸는 기능이 있었으면 좋겠어요."></textarea>
-          </div>
-
-          <div class="btn-row">
-            <button class="btn primary" id="feedbackIssueBtn">GitHub에 수정요청 남기기</button>
-            <button class="btn" id="feedbackMailBtn">메일 앱으로 보내기</button>
-            <button class="btn" id="feedbackCopyBtn">내용 복사</button>
-          </div>
-
-          <div class="feedback-help">
-            GitHub 버튼은 <strong>hyungkeunyoo/nameplate-maker</strong>의 새 Issue 작성 화면을 엽니다.
-            GitHub 로그인이 없는 사용자는 ‘메일 앱으로 보내기’ 또는 ‘내용 복사’를 이용할 수 있습니다.
-            메일 수신 주소는 코드 상단의 <strong>FEEDBACK_EMAIL</strong> 값에 한 번만 입력하면 됩니다.
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <h2>패치 내역</h2>
-
-        <details class="patch" open>
-          <summary>업데이트 기록 보기</summary>
-
-          <div class="patch-body">
-            <div class="patch-item">
-              <div class="patch-version">v2.8.1</div>
-              <div>· 명패케이스 실제 삽입 방향에 맞게 앞·뒷면 출력 순서 수정</div>
-              <div>· 180도 회전된 반대면을 위쪽, 정상면을 아래쪽에 배치</div>
-              <div>· 회전 옵션 안내 문구도 실제 출력 방향에 맞게 수정</div>
-            </div>
-
-            <div class="patch-item">
-              <div class="patch-version">v2.8</div>
-              <div>· 위치·크기 조절값 초기화 기능 추가</div>
-              <div>· 명패 외곽 4모서리 재단선 인쇄 옵션 추가</div>
-              <div>· 명패 규격 변경 시 글자·로고 자동 비례 조정 옵션 추가</div>
-              <div>· 명단 입력 중 실수 방지를 위한 디자인 설정 잠금 기능 추가</div>
-              <div>· 인쇄 배율 확인용 100mm 테스트 인쇄 페이지 추가</div>
-            </div>
-
-            <div class="patch-item">
-              <div class="patch-version">v2.7.1</div>
-              <div>· 명패 규격과 인쇄 배율을 먼저 확인할 수 있도록 ‘인쇄 설정’을 좌측 패널 최상단으로 이동</div>
-            </div>
-
-            <div class="patch-item">
-              <div class="patch-version">v2.7</div>
-              <div>· 부서별로 다른 명패 케이스에 대응하도록 명패 규격 프리셋 추가</div>
-              <div>· 200×70 / 200×80 / 250×80 / 255×85mm 프리셋 제공</div>
-              <div>· 사용자 지정 가로·세로(mm) 직접 입력 지원</div>
-              <div>· 명패 높이에 따라 양면 연속 출력 크기와 가운데 접점 위치 자동 계산</div>
-              <div>· A4 가로 영역을 넘는 규격 입력 시 경고 표시</div>
-            </div>
-
-            <div class="patch-item">
-              <div class="patch-version">v2.6</div>
-              <div>· 이름의 좌우·상하 위치 조절 슬라이더 추가</div>
-              <div>· 상단 소속·직책 문구의 좌우·상하 위치 조절 슬라이더 추가</div>
-              <div>· 하단 한양대/ERICA 로고 상하 이동 범위를 ±8mm에서 ±15mm로 확대</div>
-              <div>· 텍스트 위치값도 작업 저장·불러오기 및 디자인 기본값 저장에 포함</div>
-            </div>
-
-            <div class="patch-item">
-              <div class="patch-version">v2.5</div>
-              <div>· 앞면과 뒷면 사이 8mm 여백 제거, 250×166mm 연속 출력 구조로 변경</div>
-              <div>· 위쪽 반대면 명패 180도 회전을 기본값으로 설정</div>
-              <div>· 화면에서만 가운데 접점 가이드 표시, 실제 인쇄에서는 자동 숨김</div>
-              <div>· 기본 색상 설정을 글자색 / 선·외곽선색으로 단순화</div>
-              <div>· 이름 / 소속·직책 개별 색상은 세부 설정으로 이동</div>
-              <div>· 한양블루·네이비·골드 등 대표색 팔레트 8종 추가</div>
-            </div>
-
-            <div class="patch-item">
-              <div class="patch-version">v2.4</div>
-              <div>· 좌측 로고 크기뿐 아니라 좌우·상하 위치 조절 추가</div>
-              <div>· 하단 한양대/ERICA 로고의 크기·좌우·상하 위치 조절 추가</div>
-              <div>· 데스크톱에서 좌측 설정 패널만 스크롤되고 우측 인쇄 미리보기는 고정되도록 개선</div>
-              <div>· 로고 위치 조절값을 작업 저장·불러오기 및 디자인 기본값 저장에 포함</div>
-            </div>
-
-            <div class="patch-item">
-              <div class="patch-version">v2.3</div>
-              <div>· 기존 기본형 + 신규 디자인 4종 선택 기능 추가</div>
-              <div>· 모던 미니멀 / 네이비 프레임 / 골드 클래식 / 블루 지오메트릭 추가</div>
-              <div>· 이름 색상과 소속·직책 색상을 각각 변경 가능</div>
-              <div>· 디자인별 추천 글자색 자동 적용 기능 추가</div>
-              <div>· 디자인 PNG를 실제 이미지 레이어로 출력해 PDF 인쇄 시 유지</div>
-            </div>
-
-            <div class="patch-item">
-              <div class="patch-version">v2.2.1</div>
-              <div>· 행 추가 시 명단이 표시되지 않던 런타임 오류 수정</div>
-              <div>· 명단 미리보기와 페이지 카운터가 멈추던 오류 수정</div>
-              <div>· 엑셀 4번째 열의 좌측 로고 지정 오류 수정</div>
-              <div>· 작업 저장·불러오기 시 외부기관 로고 복원 오류 수정</div>
-            </div>
-
-            <div class="patch-item">
-              <div class="patch-version">v2.2</div>
-              <div>· 좌측 로고는 한양대학교를 기본값으로 유지</div>
-              <div>· 외부기관 로고를 여러 개 등록하고 사람별로 선택 가능하도록 복원</div>
-              <div>· 엑셀 4번째 열에서 외부기관 로고명을 지정할 수 있도록 지원</div>
-              <div>· 하단 로고는 한양대학교 / 한양대학교 ERICA 선택 구조 유지</div>
-              <div>· 수정요청 메일 수신 주소 keun0810@hanyang.ac.kr 유지</div>
-            </div>
-
-            <div class="patch-item">
-              <div class="patch-version">v2.1</div>
-              <div>· 좌측 로고를 한양대학교 로고 1종으로 고정</div>
-              <div>· 하단 표기를 텍스트가 아닌 로고 이미지 방식으로 변경</div>
-              <div>· 하단 로고를 한양대학교 / 한양대학교 ERICA 중 선택 가능</div>
-              <div>· 수정요청 수신 메일을 keun0810@hanyang.ac.kr 로 설정</div>
-            </div>
-
-            <div class="patch-item">
-              <div class="patch-version">v2.0</div>
-              <div>· 한양대학교 로고를 전체 기본값으로 설정</div>
-              <div>· 한양대학교 ERICA 기본 로고 선택 추가</div>
-              <div>· 외부기관 로고를 여러 개 등록하고 사람별로 선택 가능</div>
-              <div>· 엑셀 4번째 열에서 사람별 로고 자동 지정 지원</div>
-              <div>· 수정요청·오류·기능추가 의견 작성 영역 추가</div>
-              <div>· GitHub Issue / 메일 / 클립보드 복사 방식의 의견 전달 기능 추가</div>
-            </div>
-
-            <div class="patch-item">
-              <div class="patch-version">v1.0</div>
-              <div>· 가로형 양면 명패 생성</div>
-              <div>· A4 가로 한 페이지당 동일 명패 2개 배치</div>
-              <div>· 대량 명단 붙여넣기 및 전체 PDF 인쇄 지원</div>
-              <div>· 글자 크기·자간·색상·로고 크기 조절 지원</div>
-            </div>
-          </div>
-        </details>
-      </section>
-
-      
-    </aside>
-
-    <section class="workspace">
-      <div class="preview-toolbar">
-        <div class="preview-title">
-          <h2>인쇄 미리보기</h2>
-          <p id="selectedPersonLabel">대상자를 추가해 주세요.</p>
-        </div>
-
-        <div class="page-navigation">
-          <button class="btn small" id="prevBtn">이전</button>
-          <div class="page-counter" id="pageCounter">0 / 0</div>
-          <button class="btn small" id="nextBtn">다음</button>
         </div>
       </div>
 
-      <div class="preview-zone" id="previewZone">
-        <div class="preview-scaler" id="previewScaler">
-          <div id="previewPage"></div>
+<div class="range-field">
+<label>이름 위치/크기 미세조정</label>
+@@ -314,38 +538,35 @@ <h1>메일 명함 생성기</h1>
+</div>
+</div>
+
+      <div class="range-field">
+        <label>캐릭터 위치/크기 미세조정</label>
+        <div class="range-row">
+          <span>좌우</span>
+          <input id="charOffsetX" type="range" min="-250" max="250" value="0" />
+          <span id="charOffsetXValue">0</span>
+        </div>
+        <div class="range-row">
+          <span>상하</span>
+          <input id="charOffsetY" type="range" min="-250" max="250" value="0" />
+          <span id="charOffsetYValue">0</span>
+        </div>
+        <div class="range-row">
+          <span>크기</span>
+          <input id="charScale" type="range" min="40" max="160" value="100" />
+          <span id="charScaleValue">100</span>
         </div>
       </div>
 
-      <div class="thumbs" id="thumbs"></div>
-    </section>
-  </main>
-
-  <div class="print-stage" id="printStage" aria-hidden="true"></div>
-  <div class="status" id="status"></div>
-
-  <input type="file" id="projectFileInput" accept=".json,application/json" hidden />
-
-  <script>
-    (() => {
-      "use strict";
-
-      /*
-        =========================================================
-        사용자 설정
-        =========================================================
-
-        1) 수정요청을 받을 이메일 주소를 아래에 입력하세요.
-           예: const FEEDBACK_EMAIL = "example@hanyang.ac.kr";
-
-        2) GitHub 저장소 주소를 바꾸고 싶다면 FEEDBACK_ISSUE_URL을 수정하세요.
-      */
-      const FEEDBACK_EMAIL = "keun0810@hanyang.ac.kr";
-      const FEEDBACK_ISSUE_URL = "https://github.com/hyungkeunyoo/nameplate-maker/issues/new";
-
-      const STORAGE_KEY = "nameplate-maker-project-v27";
-      const DESIGN_KEY = "nameplate-maker-design-v27";
-
-      const BUILTIN_LEFT_LOGOS = {
-        hanyang: {
-          label: "한양대학교",
-          src: "assets/hanyang-logo.png"
-        },
-        none: {
-          label: "로고 없음",
-          src: ""
-        }
-      };
-
-      const FOOTER_LOGOS = {
-        hanyang: {
-          label: "한양대학교",
-          src: "assets/footer-hanyang.png"
-        },
-        erica: {
-          label: "한양대학교 ERICA",
-          src: "assets/footer-erica.png"
-        }
-      };
-
-      const PLATE_SIZE_PRESETS = {
-        "200x70": { width: 200, height: 70, label: "소형 · 200 × 70 mm" },
-        "200x80": { width: 200, height: 80, label: "중형 · 200 × 80 mm" },
-        "250x80": { width: 250, height: 80, label: "대형 · 250 × 80 mm" },
-        "255x85": { width: 255, height: 85, label: "대형+ · 255 × 85 mm" }
-      };
-
-      const PLATE_TEMPLATES = {
-        basic: { label: "기본형", src: "", colors: { name: "#07518a", title: "#07518a", border: "#07518a" } },
-        minimal: { label: "모던 미니멀", src: "assets/template-minimal.png", colors: { name: "#0a447c", title: "#0a447c", border: "#0a447c" } },
-        frame: { label: "네이비 프레임", src: "assets/template-frame.png", colors: { name: "#0a3768", title: "#0a3768", border: "#0a3768" } },
-        gold: { label: "골드 클래식", src: "assets/template-gold.png", colors: { name: "#222222", title: "#a57b2d", border: "#b4892d" } },
-        geometric: { label: "블루 지오메트릭", src: "assets/template-geometric.png", colors: { name: "#0a3b73", title: "#0a3b73", border: "#0a3b73" } }
-      };
-
-      const defaultDesign = {
-        defaultLeftLogo: "hanyang",
-        footerLogo: "hanyang",
-        templateStyle: "basic",
-        platePreset: "250x80",
-        plateWidth: 250,
-        plateHeight: 80,
-        autoScaleElements: true,
-        showCutMarks: false,
-        settingsLocked: false,
-        nameColor: "#07518a",
-        titleColor: "#07518a",
-        borderColor: "#07518a",
-        nameSize: 78,
-        nameX: 0,
-        nameY: 0,
-        titleSize: 27,
-        titleX: 0,
-        titleY: 0,
-        nameSpacing: 18,
-        logoWidth: 54,
-        logoX: 0,
-        logoY: 0,
-        footerLogoWidth: 58,
-        footerLogoX: 0,
-        footerLogoY: 0,
-        titleSeparator: " ",
-        autoFit: true,
-        rotateBack: true,
-        showPageLabel: false
-      };
-
-      const state = {
-        people: [
-          {
-            id: cryptoId(),
-            name: "홍길동",
-            organization: "한양대학교",
-            position: "총장",
-            logoKey: "default"
-          }
-        ],
-        customLogos: [],
-        design: { ...defaultDesign },
-        selectedIndex: 0
-      };
-
-      const $ = (selector) => document.querySelector(selector);
-      const $$ = (selector) => [...document.querySelectorAll(selector)];
-
-      const elements = {
-        peopleCount: $("#peopleCount"),
-        bulkInput: $("#bulkInput"),
-        peopleTableBody: $("#peopleTableBody"),
-        emptyMessage: $("#emptyMessage"),
-        defaultLeftLogo: $("#defaultLeftLogo"),
-        customLogoName: $("#customLogoName"),
-        customLogoFile: $("#customLogoFile"),
-        customLogoList: $("#customLogoList"),
-        footerLogo: $("#footerLogo"),
-        templateCards: $$(".template-card"),
-        recommendedColorBtn: $("#recommendedColorBtn"),
-        titleSeparator: $("#titleSeparator"),
-        overallTextColor: $("#overallTextColor"),
-        overallTextColorHex: $("#overallTextColorHex"),
-        mixedColorNote: $("#mixedColorNote"),
-        paletteTarget: $("#paletteTarget"),
-        paletteChips: $$(".palette-chip"),
-        nameColor: $("#nameColor"),
-        nameColorHex: $("#nameColorHex"),
-        titleColor: $("#titleColor"),
-        titleColorHex: $("#titleColorHex"),
-        borderColor: $("#borderColor"),
-        borderColorHex: $("#borderColorHex"),
-        nameSize: $("#nameSize"),
-        nameSizeNumber: $("#nameSizeNumber"),
-        nameX: $("#nameX"),
-        nameXNumber: $("#nameXNumber"),
-        nameY: $("#nameY"),
-        nameYNumber: $("#nameYNumber"),
-        titleSize: $("#titleSize"),
-        titleSizeNumber: $("#titleSizeNumber"),
-        titleX: $("#titleX"),
-        titleXNumber: $("#titleXNumber"),
-        titleY: $("#titleY"),
-        titleYNumber: $("#titleYNumber"),
-        nameSpacing: $("#nameSpacing"),
-        nameSpacingNumber: $("#nameSpacingNumber"),
-        logoWidth: $("#logoWidth"),
-        logoWidthNumber: $("#logoWidthNumber"),
-        logoX: $("#logoX"),
-        logoXNumber: $("#logoXNumber"),
-        logoY: $("#logoY"),
-        logoYNumber: $("#logoYNumber"),
-        footerLogoWidth: $("#footerLogoWidth"),
-        footerLogoWidthNumber: $("#footerLogoWidthNumber"),
-        footerLogoX: $("#footerLogoX"),
-        footerLogoXNumber: $("#footerLogoXNumber"),
-        footerLogoY: $("#footerLogoY"),
-        footerLogoYNumber: $("#footerLogoYNumber"),
-        autoFit: $("#autoFit"),
-        rotateBack: $("#rotateBack"),
-        showPageLabel: $("#showPageLabel"),
-        platePreset: $("#platePreset"),
-        plateWidth: $("#plateWidth"),
-        plateHeight: $("#plateHeight"),
-        plateSizeSummary: $("#plateSizeSummary"),
-        plateSizeWarning: $("#plateSizeWarning"),
-        autoScaleElements: $("#autoScaleElements"),
-        showCutMarks: $("#showCutMarks"),
-        testPrintBtn: $("#testPrintBtn"),
-        resetAdjustmentsBtn: $("#resetAdjustmentsBtn"),
-        settingsLockBtn: $("#settingsLockBtn"),
-        settingsLockStatus: $("#settingsLockStatus"),
-        previewZone: $("#previewZone"),
-        previewScaler: $("#previewScaler"),
-        previewPage: $("#previewPage"),
-        printStage: $("#printStage"),
-        pageCounter: $("#pageCounter"),
-        selectedPersonLabel: $("#selectedPersonLabel"),
-        thumbs: $("#thumbs"),
-        status: $("#status"),
-        csvFileInput: $("#csvFileInput"),
-        projectFileInput: $("#projectFileInput"),
-        feedbackType: $("#feedbackType"),
-        feedbackName: $("#feedbackName"),
-        feedbackText: $("#feedbackText")
-      };
-
-      function cryptoId() {
-        if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-        return "id-" + Date.now() + "-" + Math.random().toString(16).slice(2);
-      }
-
-      function sanitizePerson(person = {}) {
-        return {
-          id: person.id || cryptoId(),
-          name: String(person.name || "").trim(),
-          organization: String(person.organization || "").trim(),
-          position: String(person.position || "").trim(),
-          logoKey: normalizeExistingLogoKey(person.logoKey || "default")
-        };
-      }
-
-      function sanitizeCustomLogo(logo = {}) {
-        return {
-          id: String(logo.id || ("custom-" + cryptoId())),
-          name: String(logo.name || "외부기관").trim(),
-          dataUrl: String(logo.dataUrl || "")
-        };
-      }
-
-      function normalizeExistingLogoKey(key) {
-        const value = String(key || "").trim();
-        if (value === "default") return "default";
-        if (Object.prototype.hasOwnProperty.call(BUILTIN_LEFT_LOGOS, value)) return value;
-        if (value.startsWith("custom-")) return value;
-        return "default";
-      }
-
-      function resolveLogoKeyFromText(raw) {
-        const value = String(raw || "").trim();
-        if (!value) return "default";
-
-        const lower = value.toLowerCase();
-        if (["기본", "default", "기본로고"].includes(lower)) return "default";
-        if (["한양대", "한양대학교", "hanyang", "hyu"].includes(lower)) return "hanyang";
-        if (["없음", "로고없음", "none", "x"].includes(lower)) return "none";
-
-        const custom = state.customLogos.find(
-          logo => logo.name.trim().toLowerCase() === lower
-        );
-        return custom ? custom.id : "default";
-      }
-
-      function clamp(value, min, max) {
-        const number = Number(value);
-        if (!Number.isFinite(number)) return min;
-        return Math.min(max, Math.max(min, number));
-      }
-
-      function showStatus(message) {
-        elements.status.textContent = message;
-        elements.status.classList.add("show");
-
-        clearTimeout(showStatus.timer);
-
-        showStatus.timer = setTimeout(() => {
-          elements.status.classList.remove("show");
-        }, 3000);
-      }
-
-      function parseRows(text) {
-        const lines = String(text || "")
-          .replace(/\r/g, "")
-          .split("\n")
-          .map(line => line.trim())
-          .filter(Boolean);
-
-        return lines.map(line => {
-          let columns;
-
-          if (line.includes("\t")) {
-            columns = line.split("\t");
-          } else {
-            columns = parseCsvLine(line);
-          }
-
-          columns = columns.map(value => String(value || "").trim());
-
-          return sanitizePerson({
-            name: columns[0] || "",
-            organization: columns[1] || "",
-            position: columns[2] || "",
-            logoKey: resolveLogoKeyFromText(columns[3] || "")
-          });
-        }).filter(person =>
-          person.name || person.organization || person.position
-        );
-      }
-
-      function parseCsvLine(line) {
-        const result = [];
-        let value = "";
-        let inQuotes = false;
-
-        for (let i = 0; i < line.length; i++) {
-          const char = line[i];
-          const next = line[i + 1];
-
-          if (char === '"' && inQuotes && next === '"') {
-            value += '"';
-            i++;
-          } else if (char === '"') {
-            inQuotes = !inQuotes;
-          } else if (char === "," && !inQuotes) {
-            result.push(value);
-            value = "";
-          } else {
-            value += char;
-          }
-        }
-
-        result.push(value);
-        return result;
-      }
-
-      function getTitle(person) {
-        const parts = [person.organization, person.position].filter(Boolean);
-
-        if (state.design.titleSeparator === "__LINE_BREAK__") {
-          return parts.join("\n");
-        }
-
-        return parts.join(state.design.titleSeparator);
-      }
-
-      function getEffectiveLeftLogoKey(person) {
-        const key = person.logoKey || "default";
-
-        if (key === "default") {
-          return state.design.defaultLeftLogo || "hanyang";
-        }
-
-        return key;
-      }
-
-      function getLeftLogoInfo(person) {
-        const key = getEffectiveLeftLogoKey(person);
-
-        if (BUILTIN_LEFT_LOGOS[key]) {
-          return {
-            key,
-            label: BUILTIN_LEFT_LOGOS[key].label,
-            src: BUILTIN_LEFT_LOGOS[key].src,
-            isBuiltIn: true
-          };
-        }
-
-        const custom = state.customLogos.find(logo => logo.id === key);
-
-        if (custom) {
-          return {
-            key: custom.id,
-            label: custom.name,
-            src: custom.dataUrl,
-            isBuiltIn: false
-          };
-        }
-
-        const fallback =
-          BUILTIN_LEFT_LOGOS[state.design.defaultLeftLogo] ||
-          BUILTIN_LEFT_LOGOS.hanyang;
-
-        return {
-          key: state.design.defaultLeftLogo,
-          label: fallback.label,
-          src: fallback.src,
-          isBuiltIn: true
-        };
-      }
-
-      function applyCssVariables() {
-        const root = document.documentElement;
-
-        root.style.setProperty("--plate-name-color", state.design.nameColor);
-        root.style.setProperty("--plate-title-color", state.design.titleColor);
-        root.style.setProperty("--plate-border", state.design.borderColor);
-
-        root.style.setProperty("--plate-width", `${state.design.plateWidth}mm`);
-        root.style.setProperty("--plate-height", `${state.design.plateHeight}mm`);
-        root.style.setProperty("--plate-stack-height", `${state.design.plateHeight * 2}mm`);
-        root.style.setProperty("--plate-fold-y", `${state.design.plateHeight}mm`);
-
-        root.style.setProperty("--plate-name-size", `${state.design.nameSize}pt`);
-        root.style.setProperty("--plate-name-x", `${state.design.nameX}mm`);
-        root.style.setProperty("--plate-name-y", `${state.design.nameY}mm`);
-
-        root.style.setProperty("--plate-title-size", `${state.design.titleSize}pt`);
-        root.style.setProperty("--plate-title-x", `${state.design.titleX}mm`);
-        root.style.setProperty("--plate-title-y", `${state.design.titleY}mm`);
-
-        root.style.setProperty("--plate-name-spacing", `${state.design.nameSpacing / 100}em`);
-        root.style.setProperty("--plate-logo-width", `${state.design.logoWidth}mm`);
-        root.style.setProperty("--plate-logo-x", `${state.design.logoX}mm`);
-        root.style.setProperty("--plate-logo-y", `${state.design.logoY}mm`);
-
-        root.style.setProperty("--footer-logo-width", `${state.design.footerLogoWidth}mm`);
-        root.style.setProperty("--footer-logo-x", `${state.design.footerLogoX}mm`);
-        root.style.setProperty("--footer-logo-y", `${state.design.footerLogoY}mm`);
-      }
-
-      function getTemplateInfo() {
-        return PLATE_TEMPLATES[state.design.templateStyle] || PLATE_TEMPLATES.basic;
-      }
-
-      function detectPlatePreset(width, height) {
-        const match = Object.entries(PLATE_SIZE_PRESETS).find(
-          ([, preset]) =>
-            Number(preset.width) === Number(width) &&
-            Number(preset.height) === Number(height)
-        );
-
-        return match ? match[0] : "custom";
-      }
-
-      function updatePlateSizeSummary() {
-        const width = Number(state.design.plateWidth) || 250;
-        const height = Number(state.design.plateHeight) || 80;
-        const stackHeight = height * 2;
-
-        elements.plateSizeSummary.innerHTML =
-          `명패 1면 <strong>${width} × ${height}mm</strong> · ` +
-          `양면 연속 출력 <strong>${width} × ${stackHeight}mm</strong>`;
-
-        const warnings = [];
-
-        if (width > 297) {
-          warnings.push("가로가 A4 297mm를 초과합니다.");
-        }
-
-        if (stackHeight > 210) {
-          warnings.push("앞·뒷면을 합친 높이가 A4 210mm를 초과합니다.");
-        }
-
-        elements.plateSizeWarning.textContent = warnings.join(" ");
-      }
-
-      function scaleAndClamp(value, ratio, min, max) {
-        const next = Number(value) * ratio;
-        return Math.round(Math.min(max, Math.max(min, next)) * 10) / 10;
-      }
-
-      function scaleDesignForPlateSize(oldWidth, oldHeight, newWidth, newHeight) {
-        if (!state.design.autoScaleElements) return;
-
-        if (!oldWidth || !oldHeight) return;
-
-        const widthRatio = newWidth / oldWidth;
-        const heightRatio = newHeight / oldHeight;
-        const uniformRatio = Math.min(widthRatio, heightRatio);
-
-        state.design.nameSize =
-          scaleAndClamp(state.design.nameSize, uniformRatio, 40, 105);
-
-        state.design.titleSize =
-          scaleAndClamp(state.design.titleSize, uniformRatio, 15, 44);
-
-        state.design.logoWidth =
-          scaleAndClamp(state.design.logoWidth, uniformRatio, 20, 65);
-
-        state.design.footerLogoWidth =
-          scaleAndClamp(state.design.footerLogoWidth, uniformRatio, 20, 90);
-
-        state.design.nameX =
-          scaleAndClamp(state.design.nameX, widthRatio, -35, 35);
-
-        state.design.titleX =
-          scaleAndClamp(state.design.titleX, widthRatio, -35, 35);
-
-        state.design.logoX =
-          scaleAndClamp(state.design.logoX, widthRatio, -25, 25);
-
-        state.design.footerLogoX =
-          scaleAndClamp(state.design.footerLogoX, widthRatio, -35, 35);
-
-        state.design.nameY =
-          scaleAndClamp(state.design.nameY, heightRatio, -20, 20);
-
-        state.design.titleY =
-          scaleAndClamp(state.design.titleY, heightRatio, -18, 18);
-
-        state.design.logoY =
-          scaleAndClamp(state.design.logoY, heightRatio, -20, 20);
-
-        state.design.footerLogoY =
-          scaleAndClamp(state.design.footerLogoY, heightRatio, -15, 15);
-      }
-
-      function setPlateSize(width, height, presetKey = null) {
-        const safeWidth = Math.min(290, Math.max(100, Number(width) || 250));
-        const safeHeight = Math.min(100, Math.max(45, Number(height) || 80));
-
-        const oldWidth = Number(state.design.plateWidth) || 250;
-        const oldHeight = Number(state.design.plateHeight) || 80;
-
-        if (safeWidth !== oldWidth || safeHeight !== oldHeight) {
-          scaleDesignForPlateSize(
-            oldWidth,
-            oldHeight,
-            safeWidth,
-            safeHeight
-          );
-        }
-
-        state.design.plateWidth = safeWidth;
-        state.design.plateHeight = safeHeight;
-        state.design.platePreset =
-          presetKey || detectPlatePreset(safeWidth, safeHeight);
-
-        syncControlsFromState();
-        renderPreviewOnly();
-      }
-
-      function resetAdjustments() {
-        const width = Number(state.design.plateWidth) || 250;
-        const height = Number(state.design.plateHeight) || 80;
-        const baseScale = Math.min(width / 250, height / 80);
-
-        state.design.nameSize =
-          Math.round(Math.min(105, Math.max(40, 78 * baseScale)) * 10) / 10;
-
-        state.design.titleSize =
-          Math.round(Math.min(44, Math.max(15, 27 * baseScale)) * 10) / 10;
-
-        state.design.logoWidth =
-          Math.round(Math.min(65, Math.max(20, 54 * baseScale)) * 10) / 10;
-
-        state.design.footerLogoWidth =
-          Math.round(Math.min(90, Math.max(20, 58 * baseScale)) * 10) / 10;
-
-        state.design.nameX = 0;
-        state.design.nameY = 0;
-        state.design.titleX = 0;
-        state.design.titleY = 0;
-        state.design.logoX = 0;
-        state.design.logoY = 0;
-        state.design.footerLogoX = 0;
-        state.design.footerLogoY = 0;
-        state.design.nameSpacing = 18;
-
-        syncControlsFromState();
-        renderPreviewOnly();
-      }
-
-      function applySettingsLock() {
-        const locked = Boolean(state.design.settingsLocked);
-
-        document.body.classList.toggle("settings-locked", locked);
-
-        $$("[data-settings-section] input, [data-settings-section] select, [data-settings-section] textarea, [data-settings-section] button")
-          .forEach(control => {
-            if (control.dataset.lockExempt === "true") {
-              control.disabled = false;
-              return;
-            }
-
-            control.disabled = locked;
-          });
-
-        elements.settingsLockBtn.textContent =
-          locked ? "설정 잠금 해제" : "설정 잠금";
-
-        elements.settingsLockStatus.textContent =
-          locked
-            ? "디자인 설정이 잠겨 있습니다. 명단은 계속 수정할 수 있습니다."
-            : "";
-
-        elements.settingsLockStatus.classList.toggle("locked", locked);
-      }
-
-      function applyRecommendedColors(templateStyle = state.design.templateStyle) {
-        const template = PLATE_TEMPLATES[templateStyle] || PLATE_TEMPLATES.basic;
-        state.design.nameColor = template.colors.name;
-        state.design.titleColor = template.colors.title;
-        state.design.borderColor = template.colors.border;
-      }
-
-      function setTemplateStyle(templateStyle, applyColors = true) {
-        if (!PLATE_TEMPLATES[templateStyle]) templateStyle = "basic";
-        state.design.templateStyle = templateStyle;
-        if (applyColors) applyRecommendedColors(templateStyle);
-        syncControlsFromState();
-        renderPreviewOnly();
-      }
-
-      function createLogoBox(person) {
-        const logoBox = document.createElement("div");
-        logoBox.className = "logo-box";
-
-        const logo = getLeftLogoInfo(person);
-
-        if (!logo.src) {
-          const placeholder = document.createElement("div");
-          placeholder.className = "logo-placeholder";
-          placeholder.textContent = "로고 없음";
-          logoBox.appendChild(placeholder);
-          return logoBox;
-        }
-
-        const img = document.createElement("img");
-        img.src = logo.src;
-        img.alt = logo.label;
-
-        img.addEventListener("error", () => {
-          img.remove();
-
-          const placeholder = document.createElement("div");
-          placeholder.className = "logo-placeholder";
-          placeholder.textContent = `${logo.label}
-로고 파일 없음`;
-
-          logoBox.appendChild(placeholder);
-        }, { once: true });
-
-        logoBox.appendChild(img);
-        return logoBox;
-      }
-
-      function createNameplate(person, isBack = false) {
-        const plate = document.createElement("div");
-        plate.className = "nameplate";
-
-        if (isBack && state.design.rotateBack) {
-          plate.classList.add("back-rotated");
-        }
-
-        const template = getTemplateInfo();
-
-        if (template.src) {
-          plate.classList.add("has-template");
-          const templateImage = document.createElement("img");
-          templateImage.className = "plate-template-bg";
-          templateImage.src = template.src;
-          templateImage.alt = "";
-          templateImage.setAttribute("aria-hidden", "true");
-          plate.appendChild(templateImage);
-        }
-
-        const main = document.createElement("div");
-        main.className = "plate-main";
-
-        const logoBox = createLogoBox(person);
-
-        const textBox = document.createElement("div");
-        textBox.className = "plate-text";
-
-        const title = document.createElement("div");
-        title.className = "plate-title auto-fit-title";
-        title.textContent = getTitle(person) || "소속 및 직책";
-
-        if (state.design.titleSeparator === "__LINE_BREAK__") {
-          title.style.whiteSpace = "pre-line";
-          title.style.textAlign = "center";
-        }
-
-        const name = document.createElement("div");
-        name.className = "plate-name auto-fit-name";
-        name.textContent = person.name || "이름";
-
-        textBox.append(title, name);
-        main.append(logoBox, textBox);
-
-        const footer = document.createElement("div");
-        footer.className = "plate-footer";
-
-        const footerLogoBox = document.createElement("div");
-        footerLogoBox.className = "footer-logo-box";
-
-        const footerLogo =
-          FOOTER_LOGOS[state.design.footerLogo] || FOOTER_LOGOS.hanyang;
-
-        const footerImg = document.createElement("img");
-        footerImg.src = footerLogo.src;
-        footerImg.alt = footerLogo.label;
-
-        footerImg.addEventListener("error", () => {
-          footerImg.remove();
-
-          const missing = document.createElement("div");
-          missing.className = "footer-logo-missing";
-          missing.textContent = `${footerLogo.label} 하단 로고 파일 없음`;
-
-          footerLogoBox.appendChild(missing);
-        }, { once: true });
-
-        footerLogoBox.appendChild(footerImg);
-        footer.appendChild(footerLogoBox);
-        plate.append(main, footer);
-
-        return plate;
-      }
-
-      function createPage(person, index, forPrint = false) {
-        const page = document.createElement("div");
-        page.className = "paper-page";
-        page.dataset.index = String(index);
-
-        if (forPrint && index === state.selectedIndex) {
-          page.classList.add("is-current");
-        }
-
-        if (state.design.showPageLabel && !forPrint) {
-          const label = document.createElement("div");
-          label.className = "page-label";
-          label.textContent = `${index + 1}페이지 · ${person.name || "이름 없음"}`;
-          page.appendChild(label);
-        }
-
-        const stack = document.createElement("div");
-        stack.className = "nameplate-stack";
-
-        const front = createNameplate(person, false);
-        const back = createNameplate(person, true);
-
-        // 명패케이스 삽입 방향에 맞춰
-        // 180도 회전된 반대면을 위쪽, 정상면을 아래쪽에 배치
-        stack.append(back, front);
-
-        if (!forPrint) {
-          const guide = document.createElement("div");
-          guide.className = "fold-guide";
-
-          const guideLabel = document.createElement("div");
-          guideLabel.className = "fold-guide-label";
-          guideLabel.textContent = "접점";
-
-          stack.append(guide, guideLabel);
-        }
-
-        if (state.design.showCutMarks) {
-          ["tl", "tr", "bl", "br"].forEach(position => {
-            const mark = document.createElement("span");
-            mark.className = `cut-mark ${position}`;
-            stack.appendChild(mark);
-          });
-        }
-
-        page.appendChild(stack);
-        return page;
-      }
-
-      function buildLogoSelect(person, index) {
-        const select = document.createElement("select");
-
-        const options = [
-          {
-            value: "default",
-            label: `기본 (${BUILTIN_LEFT_LOGOS[state.design.defaultLeftLogo]?.label || "한양대학교"})`
-          },
-          { value: "hanyang", label: "한양대학교" },
-          { value: "none", label: "로고 없음" },
-          ...state.customLogos.map(logo => ({
-            value: logo.id,
-            label: logo.name
-          }))
-        ];
-
-        options.forEach(optionData => {
-          const option = document.createElement("option");
-          option.value = optionData.value;
-          option.textContent = optionData.label;
-          select.appendChild(option);
-        });
-
-        const currentKey = options.some(option => option.value === person.logoKey)
-          ? person.logoKey
-          : "default";
-
-        select.value = currentKey;
-
-        select.addEventListener("change", () => {
-          state.people[index].logoKey = select.value;
-          renderPreviewOnly();
-          saveLocal();
-        });
-
-        select.addEventListener("focus", () => {
-          state.selectedIndex = index;
-          renderPreviewOnly();
-        });
-
-        return select;
-      }
-
-      function renderTable() {
-        elements.peopleTableBody.replaceChildren();
-        elements.emptyMessage.style.display = state.people.length ? "none" : "block";
-        elements.peopleCount.textContent = `${state.people.length}명`;
-
-        state.people.forEach((person, index) => {
-          const tr = document.createElement("tr");
-          tr.dataset.id = person.id;
-
-          const numberCell = document.createElement("td");
-          numberCell.className = "row-number";
-          numberCell.textContent = String(index + 1);
-
-          const nameCell = document.createElement("td");
-          nameCell.appendChild(createTableInput(
-            person.name, "name", index, "이름"
-          ));
-
-          const orgCell = document.createElement("td");
-          orgCell.appendChild(createTableInput(
-            person.organization, "organization", index, "소속·기관"
-          ));
-
-          const positionCell = document.createElement("td");
-          positionCell.appendChild(createTableInput(
-            person.position, "position", index, "직책·직위"
-          ));
-
-          const logoCell = document.createElement("td");
-          logoCell.appendChild(buildLogoSelect(person, index));
-
-          const deleteCell = document.createElement("td");
-          const deleteButton = document.createElement("button");
-
-          deleteButton.className = "btn danger small";
-          deleteButton.type = "button";
-          deleteButton.textContent = "삭제";
-
-          deleteButton.addEventListener("click", () => {
-            state.people.splice(index, 1);
-            state.selectedIndex = Math.min(
-              state.selectedIndex,
-              Math.max(0, state.people.length - 1)
-            );
-            renderAll();
-          });
-
-          deleteCell.appendChild(deleteButton);
-
-          tr.append(
-            numberCell,
-            nameCell,
-            orgCell,
-            positionCell,
-            logoCell,
-            deleteCell
-          );
-
-          elements.peopleTableBody.appendChild(tr);
+<div class="btn-row">
+<button class="btn-primary" id="downloadBtn" type="button">PNG 다운로드</button>
+<button class="btn-secondary" id="resetBtn" type="button">기본값 복원</button>
+</div>
+
+<div class="help">
+        Pretendard 적용 / 담당업무 선택 입력 / 글자별 굵기 설정 / 다운로드 가로폭 직접 입력 / 다운로드 이벤트 추적 포함.
+        Pretendard 적용 / 담당업무 선택 입력 / 글자별 굵기 설정 / 캐릭터·내 사진·이미지 없음 선택 /
+        다운로드 가로폭 직접 입력 / 다운로드 이벤트 추적 포함.
+</div>
+</div>
+
+<div class="preview">
+<p class="preview-title">미리보기</p>
+<canvas id="canvas" width="2048" height="706"></canvas>
+
+      <!-- 패치 내역은 아래 내용을 직접 수정하거나 항목을 추가하면 됨 -->
+      <div class="patch-notes">
+        <p class="patch-notes-title">패치 내역</p>
+
+        <div class="patch-item">
+          <span class="patch-date">2026.07.29</span>
+          <ul>
+            <li>하이리온 17종과 하이나리 5종을 추가함.</li>
+            <li>사용자가 본인 사진을 직접 넣을 수 있는 기능을 추가함.</li>
+            <li>사진은 서버에 저장하지 않고 브라우저 안에서만 처리하도록 구성함.</li>
+            <li>오른쪽 이미지를 캐릭터·내 사진·사용 안 함 중에서 선택할 수 있도록 개선함.</li>
+          </ul>
+        </div>
+      </div>
+</div>
+</div>
+
+@@ -380,61 +601,61 @@ <h1>메일 명함 생성기</h1>
+characterBox: { x: 1570, y: 150, w: 360, h: 430 }
+};
+
+function makeCharacters() {
+  const list = [];
+    function makeCharacters() {
+      const list = [];
+
+  for (let i = 1; i <= 41; i++) {
+    const num = String(i).padStart(2, "0");
+      for (let i = 1; i <= 41; i++) {
+        const num = String(i).padStart(2, "0");
+
+    list.push({
+      category: "hanyangi",
+      label: `하냥이 ${num}`,
+      file: `assets/chars/hanyangi_${num}.png`
+    });
+  }
+        list.push({
+          category: "hanyangi",
+          label: `하냥이 ${num}`,
+          file: `assets/chars/hanyangi_${num}.png`
         });
       }
 
-      function createTableInput(value, key, index, label) {
-        const input = document.createElement("input");
+  for (let i = 1; i <= 11; i++) {
+    const num = String(i).padStart(2, "0");
+      for (let i = 1; i <= 11; i++) {
+        const num = String(i).padStart(2, "0");
 
-        input.type = "text";
-        input.value = value;
-        input.placeholder = label;
-
-        input.addEventListener("input", () => {
-          state.people[index][key] = input.value;
-          renderPreviewOnly();
-          saveLocal();
-        });
-
-        input.addEventListener("focus", () => {
-          state.selectedIndex = index;
-          renderPreviewOnly();
-        });
-
-        return input;
-      }
-
-      function renderCustomLogoList() {
-        elements.customLogoList.replaceChildren();
-
-        if (!state.customLogos.length) {
-          const empty = document.createElement("div");
-          empty.className = "built-in-note";
-          empty.textContent = "등록된 외부기관 좌측 로고가 없습니다.";
-          elements.customLogoList.appendChild(empty);
-          return;
-        }
-
-        state.customLogos.forEach(logo => {
-          const item = document.createElement("div");
-          item.className = "custom-logo-item";
-
-          const thumb = document.createElement("div");
-          thumb.className = "custom-logo-thumb";
-
-          const img = document.createElement("img");
-          img.src = logo.dataUrl;
-          img.alt = logo.name;
-          thumb.appendChild(img);
-
-          const name = document.createElement("div");
-          name.className = "custom-logo-name";
-          name.textContent = logo.name;
-
-          const remove = document.createElement("button");
-          remove.className = "btn danger small";
-          remove.type = "button";
-          remove.textContent = "삭제";
-
-          remove.addEventListener("click", () => {
-            if (!confirm(`'${logo.name}' 로고를 삭제할까요?`)) return;
-
-            state.customLogos = state.customLogos.filter(item => item.id !== logo.id);
-
-            state.people.forEach(person => {
-              if (person.logoKey === logo.id) {
-                person.logoKey = "default";
-              }
-            });
-
-            renderAll();
-            showStatus("외부기관 좌측 로고를 삭제했습니다.");
-          });
-
-          item.append(thumb, name, remove);
-          elements.customLogoList.appendChild(item);
+    list.push({
+      category: "college",
+      label: `단과대학 하냥이 ${num}`,
+      file: `assets/chars/college_${num}.png`
+    });
+  }
+        list.push({
+          category: "college",
+          label: `단과대학 하냥이 ${num}`,
+          file: `assets/chars/college_${num}.png`
         });
       }
 
-      function renderPreviewOnly() {
-        applyCssVariables();
+  for (let i = 1; i <= 24; i++) {
+    const num = String(i).padStart(2, "0");
+      for (let i = 1; i <= 24; i++) {
+        const num = String(i).padStart(2, "0");
 
-        elements.previewPage.replaceChildren();
-        elements.printStage.replaceChildren();
-        elements.thumbs.replaceChildren();
+    list.push({
+      category: "hibibi",
+      label: `하이비비 ${num}`,
+      file: `assets/chars/hibibi_${num}.png`
+    });
+  }
+        list.push({
+          category: "hibibi",
+          label: `하이비비 ${num}`,
+          file: `assets/chars/hibibi_${num}.png`
+        });
+      }
 
-        if (!state.people.length) {
-          elements.pageCounter.textContent = "0 / 0";
-          elements.selectedPersonLabel.textContent = "대상자를 추가해 주세요.";
-          fitPreviewScale();
-          saveLocal();
-          return;
-        }
+  for (let i = 1; i <= 17; i++) {
+    const num = String(i).padStart(2, "0");
+      for (let i = 1; i <= 17; i++) {
+        const num = String(i).padStart(2, "0");
 
-        state.selectedIndex = clamp(
-          state.selectedIndex,
+    list.push({
+      category: "hylion",
+      label: `하이리온 ${num}`,
+      file: `assets/chars/hylion_${num}.png`
+    });
+  }
+        list.push({
+          category: "hylion",
+          label: `하이리온 ${num}`,
+          file: `assets/chars/hylion_${num}.png`
+        });
+      }
+
+  for (let i = 1; i <= 5; i++) {
+    const num = String(i).padStart(2, "0");
+      for (let i = 1; i <= 5; i++) {
+        const num = String(i).padStart(2, "0");
+
+    list.push({
+      category: "hynari",
+      label: `하이나리 ${num}`,
+      file: `assets/chars/hynari_${num}.png`
+    });
+  }
+        list.push({
+          category: "hynari",
+          label: `하이나리 ${num}`,
+          file: `assets/chars/hynari_${num}.png`
+        });
+      }
+
+  return list;
+}
+      return list;
+    }
+
+const characters = makeCharacters();
+
+@@ -450,11 +671,20 @@ <h1>메일 명함 생성기</h1>
+const elPhone = document.getElementById("phone");
+const elAddress = document.getElementById("address");
+const elExportWidth = document.getElementById("exportWidth");
+
+    const elImageMode = document.getElementById("imageMode");
+    const elCharacterControls = document.getElementById("characterControls");
+    const elPhotoControls = document.getElementById("photoControls");
+
+const elCategory = document.getElementById("category");
+const elCharacter = document.getElementById("character");
+const elCharPreview = document.getElementById("charPreview");
+const elCharCountInfo = document.getElementById("charCountInfo");
+
+    const elPhotoUpload = document.getElementById("photoUpload");
+    const elPhotoPreview = document.getElementById("photoPreview");
+    const elPhotoShape = document.getElementById("photoShape");
+
+const elBoldName = document.getElementById("boldName");
+const elBoldTitle = document.getElementById("boldTitle");
+const elBoldTeam = document.getElementById("boldTeam");
+@@ -476,8 +706,17 @@ <h1>메일 명함 생성기</h1>
+const elCharOffsetYValue = document.getElementById("charOffsetYValue");
+const elCharScaleValue = document.getElementById("charScaleValue");
+
+    const elPhotoOffsetX = document.getElementById("photoOffsetX");
+    const elPhotoOffsetY = document.getElementById("photoOffsetY");
+    const elPhotoScale = document.getElementById("photoScale");
+    const elPhotoOffsetXValue = document.getElementById("photoOffsetXValue");
+    const elPhotoOffsetYValue = document.getElementById("photoOffsetYValue");
+    const elPhotoScaleValue = document.getElementById("photoScaleValue");
+
+const templateImg = new Image();
+let selectedCharImg = new Image();
+    let uploadedPhotoImg = null;
+    let uploadedPhotoUrl = null;
+let filteredCharacters = [];
+const logoImages = {};
+
+@@ -552,7 +791,7 @@ <h1>메일 명함 생성기</h1>
+y: opt.y + offsetY,
+startSize: Math.round(startSize * scale),
+minSize: Math.max(18, Math.round(minSize * scale)),
+        maxWidth: maxWidth
+        maxWidth
+}, weight);
+}
+
+@@ -651,6 +890,80 @@ <h1>메일 명함 생성기</h1>
+ctx.drawImage(img, t.sx, t.sy, t.sw, t.sh, drawX, drawY, drawW, drawH);
+}
+
+    function roundedRectPath(context, x, y, width, height, radius) {
+      const safeRadius = Math.min(radius, width / 2, height / 2);
+
+      context.beginPath();
+      context.moveTo(x + safeRadius, y);
+      context.lineTo(x + width - safeRadius, y);
+      context.quadraticCurveTo(x + width, y, x + width, y + safeRadius);
+      context.lineTo(x + width, y + height - safeRadius);
+      context.quadraticCurveTo(x + width, y + height, x + width - safeRadius, y + height);
+      context.lineTo(x + safeRadius, y + height);
+      context.quadraticCurveTo(x, y + height, x, y + height - safeRadius);
+      context.lineTo(x, y + safeRadius);
+      context.quadraticCurveTo(x, y, x + safeRadius, y);
+      context.closePath();
+    }
+
+    function getPhotoClipBox(box, shape) {
+      if (shape !== "circle") return { ...box };
+
+      const size = Math.min(box.w, box.h);
+
+      return {
+        x: box.x + (box.w - size) / 2,
+        y: box.y + (box.h - size) / 2,
+        w: size,
+        h: size
+      };
+    }
+
+    function drawUploadedPhoto(img, box) {
+      if (!img || !img.naturalWidth || !img.naturalHeight) return;
+
+      const shape = elPhotoShape.value;
+      const clipBox = getPhotoClipBox(box, shape);
+      const offsetX = Number(elPhotoOffsetX.value);
+      const offsetY = Number(elPhotoOffsetY.value);
+      const scaleInput = Number(elPhotoScale.value) / 100;
+
+      const baseScale = Math.max(
+        clipBox.w / img.naturalWidth,
+        clipBox.h / img.naturalHeight
+      );
+
+      const scale = baseScale * scaleInput;
+      const drawW = img.naturalWidth * scale;
+      const drawH = img.naturalHeight * scale;
+      const drawX = clipBox.x + (clipBox.w - drawW) / 2 + offsetX;
+      const drawY = clipBox.y + (clipBox.h - drawH) / 2 + offsetY;
+
+      ctx.save();
+
+      if (shape === "circle") {
+        ctx.beginPath();
+        ctx.arc(
+          clipBox.x + clipBox.w / 2,
+          clipBox.y + clipBox.h / 2,
+          clipBox.w / 2,
           0,
-          state.people.length - 1
+          Math.PI * 2
         );
-
-        const selected = state.people[state.selectedIndex];
-        const leftLogoLabel = getLeftLogoInfo(selected).label;
-
-        elements.previewPage.appendChild(
-          createPage(selected, state.selectedIndex, false)
-        );
-
-        elements.selectedPersonLabel.textContent =
-          `${selected.name || "이름 없음"} · ${getTitle(selected) || "상단 문구 없음"} · 좌측 ${leftLogoLabel}`;
-
-        elements.pageCounter.textContent =
-          `${state.selectedIndex + 1} / ${state.people.length}`;
-
-        state.people.forEach((person, index) => {
-          elements.printStage.appendChild(
-            createPage(person, index, true)
-          );
-
-          const thumb = document.createElement("button");
-          thumb.className =
-            "thumb" + (index === state.selectedIndex ? " active" : "");
-          thumb.type = "button";
-          thumb.textContent =
-            `${index + 1}. ${person.name || "이름 없음"}`;
-
-          thumb.addEventListener("click", () => {
-            state.selectedIndex = index;
-            renderPreviewOnly();
-          });
-
-          elements.thumbs.appendChild(thumb);
-        });
-
-        requestAnimationFrame(() => {
-          fitText(elements.previewPage);
-          fitText(elements.printStage);
-          fitPreviewScale();
-        });
-
-        saveLocal();
+        ctx.closePath();
+      } else if (shape === "rounded") {
+        roundedRectPath(ctx, clipBox.x, clipBox.y, clipBox.w, clipBox.h, 34);
+      } else {
+        ctx.beginPath();
+        ctx.rect(clipBox.x, clipBox.y, clipBox.w, clipBox.h);
+        ctx.closePath();
       }
 
-      function renderAll() {
-        renderTable();
-        renderCustomLogoList();
-        syncControlsFromState();
-        renderPreviewOnly();
-      }
+      ctx.clip();
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+      ctx.restore();
+    }
 
-      function fitText(container) {
-        if (!state.design.autoFit) return;
+function drawLogo() {
+const type = elLogoType.value;
 
-        const fitTargets = [
-          ...container.querySelectorAll(".auto-fit-name"),
-          ...container.querySelectorAll(".auto-fit-title")
-        ];
+@@ -664,6 +977,21 @@ <h1>메일 명함 생성기</h1>
+drawTrimmedInBox(img, box, false);
+}
 
-        fitTargets.forEach(element => {
-          const isName = element.classList.contains("auto-fit-name");
-          const start = isName
-            ? state.design.nameSize
-            : state.design.titleSize;
-          const min = isName ? 34 : 12;
+    function drawRightImage() {
+      const mode = elImageMode.value;
 
-          let size = start;
-          let guard = 0;
-
-          element.style.fontSize = `${size}pt`;
-
-          while (
-            (
-              element.scrollWidth > element.clientWidth + 1 ||
-              element.scrollHeight > element.clientHeight + 1
-            ) &&
-            size > min &&
-            guard < 120
-          ) {
-            size -= 1;
-            element.style.fontSize = `${size}pt`;
-            guard++;
-          }
-        });
-      }
-
-      function fitPreviewScale() {
-        const availableWidth =
-          Math.max(280, elements.previewZone.clientWidth - 36);
-
-        const availableHeight =
-          Math.max(360, elements.previewZone.clientHeight - 36);
-
-        const pageWidthPx = 297 * (96 / 25.4);
-        const pageHeightPx = 210 * (96 / 25.4);
-
-        const scale = Math.min(
-          availableWidth / pageWidthPx,
-          availableHeight / pageHeightPx,
-          0.92
-        );
-
-        elements.previewScaler.style.transform = `scale(${scale})`;
-
-        elements.previewZone.style.minHeight =
-          `${Math.max(360, pageHeightPx * scale + 36)}px`;
-      }
-
-      function syncControlsFromState() {
-        const d = state.design;
-
-        elements.defaultLeftLogo.value =
-          BUILTIN_LEFT_LOGOS[d.defaultLeftLogo] ? d.defaultLeftLogo : "hanyang";
-
-        elements.footerLogo.value =
-          FOOTER_LOGOS[d.footerLogo] ? d.footerLogo : "hanyang";
-
-        const currentTemplate =
-          PLATE_TEMPLATES[d.templateStyle] ? d.templateStyle : "basic";
-
-        elements.templateCards.forEach(card => {
-          const active = card.dataset.template === currentTemplate;
-          card.classList.toggle("active", active);
-          card.setAttribute("aria-pressed", active ? "true" : "false");
-        });
-
-        elements.titleSeparator.value = d.titleSeparator;
-        elements.nameColor.value = d.nameColor;
-        elements.nameColorHex.value = d.nameColor;
-        elements.titleColor.value = d.titleColor;
-        elements.titleColorHex.value = d.titleColor;
-        elements.borderColor.value = d.borderColor;
-        elements.borderColorHex.value = d.borderColor;
-
-        syncOverallTextColorDisplay();
-
-        setPairedValue("nameSize", d.nameSize);
-        setPairedValue("nameX", d.nameX);
-        setPairedValue("nameY", d.nameY);
-
-        setPairedValue("titleSize", d.titleSize);
-        setPairedValue("titleX", d.titleX);
-        setPairedValue("titleY", d.titleY);
-
-        setPairedValue("nameSpacing", d.nameSpacing);
-        setPairedValue("logoWidth", d.logoWidth);
-        setPairedValue("logoX", d.logoX);
-        setPairedValue("logoY", d.logoY);
-        setPairedValue("footerLogoWidth", d.footerLogoWidth);
-        setPairedValue("footerLogoX", d.footerLogoX);
-        setPairedValue("footerLogoY", d.footerLogoY);
-
-        elements.autoFit.checked = d.autoFit;
-        elements.rotateBack.checked = d.rotateBack;
-        elements.showPageLabel.checked = d.showPageLabel;
-
-        const detectedPreset =
-          PLATE_SIZE_PRESETS[d.platePreset]
-            ? d.platePreset
-            : detectPlatePreset(d.plateWidth, d.plateHeight);
-
-        elements.platePreset.value = detectedPreset;
-        elements.plateWidth.value = d.plateWidth;
-        elements.plateHeight.value = d.plateHeight;
-
-        elements.autoScaleElements.checked =
-          d.autoScaleElements !== false;
-
-        elements.showCutMarks.checked =
-          Boolean(d.showCutMarks);
-
-        updatePlateSizeSummary();
-        applySettingsLock();
-      }
-
-      function setPairedValue(key, value) {
-        elements[key].value = value;
-        elements[`${key}Number`].value = value;
-      }
-
-      function bindPair(key, min, max, stateKey = key) {
-        const range = elements[key];
-        const number = elements[`${key}Number`];
-
-        const update = (value) => {
-          const safe = clamp(value, min, max);
-
-          range.value = safe;
-          number.value = safe;
-          state.design[stateKey] = safe;
-
-          renderPreviewOnly();
-        };
-
-        range.addEventListener("input", () => update(range.value));
-        number.addEventListener("input", () => update(number.value));
-      }
-
-      function normalizeHex(value, fallback) {
-        const text = String(value || "").trim();
-
-        if (/^#[0-9a-fA-F]{6}$/.test(text)) {
-          return text.toLowerCase();
+      if (mode === "character") {
+        if (selectedCharImg && selectedCharImg.complete && selectedCharImg.naturalWidth > 0) {
+          drawContainTrimmedCharacter(selectedCharImg, CONFIG.characterBox);
         }
-
-        if (/^[0-9a-fA-F]{6}$/.test(text)) {
-          return "#" + text.toLowerCase();
-        }
-
-        return fallback;
+        return;
       }
 
-      function syncOverallTextColorDisplay() {
-        const same =
-          String(state.design.nameColor).toLowerCase() ===
-          String(state.design.titleColor).toLowerCase();
-
-        const displayColor = state.design.nameColor || "#07518a";
-
-        elements.overallTextColor.value = displayColor;
-        elements.overallTextColorHex.value = displayColor;
-
-        elements.mixedColorNote.textContent = same
-          ? ""
-          : "이름과 소속·직책에 서로 다른 색상이 적용되어 있습니다.";
+      if (mode === "photo") {
+        drawUploadedPhoto(uploadedPhotoImg, CONFIG.characterBox);
       }
+    }
 
-      function setOverallTextColor(color) {
-        const valid = normalizeHex(color, state.design.nameColor || "#07518a");
+function drawCard() {
+if (!templateImg.complete) return;
 
-        state.design.nameColor = valid;
-        state.design.titleColor = valid;
+@@ -717,16 +1045,14 @@ <h1>메일 명함 생성기</h1>
+getWeight(elBoldAddress.checked, 700, 400)
+);
 
-        elements.nameColor.value = valid;
-        elements.nameColorHex.value = valid;
-        elements.titleColor.value = valid;
-        elements.titleColorHex.value = valid;
-
-        syncOverallTextColorDisplay();
-        renderPreviewOnly();
+      if (selectedCharImg && selectedCharImg.complete && selectedCharImg.naturalWidth > 0) {
+        drawContainTrimmedCharacter(selectedCharImg, CONFIG.characterBox);
       }
+      drawRightImage();
+}
 
-      function applyPaletteColor(color, target) {
-        const valid = normalizeHex(color, "#07518a");
+function refreshCharacterOptions(keepFile = null) {
+const category = elCategory.value;
 
-        if (target === "text") {
-          state.design.nameColor = valid;
-          state.design.titleColor = valid;
-        } else if (target === "border") {
-          state.design.borderColor = valid;
-        } else if (target === "name") {
-          state.design.nameColor = valid;
-        } else if (target === "title") {
-          state.design.titleColor = valid;
-        }
+      filteredCharacters = characters.filter(c => {
+        return category === "all" || c.category === category;
+      filteredCharacters = characters.filter(char => {
+        return category === "all" || char.category === category;
+});
 
-        syncControlsFromState();
-        renderPreviewOnly();
-      }
+elCharacter.innerHTML = "";
+@@ -745,12 +1071,21 @@ <h1>메일 명함 생성기</h1>
+elCharacter.appendChild(option);
+});
 
-      function bindColor(colorElement, hexElement, stateKey) {
-        colorElement.addEventListener("input", () => {
-          hexElement.value = colorElement.value;
-          state.design[stateKey] = colorElement.value;
+      elCharCountInfo.textContent = `현재 분류 ${filteredCharacters.length}종 / 전체 ${characters.length}종`;
+      elCharCountInfo.textContent =
+        `현재 분류 ${filteredCharacters.length}종 / 전체 ${characters.length}종`;
+}
 
-          if (stateKey === "nameColor" || stateKey === "titleColor") {
-            syncOverallTextColorDisplay();
-          }
+async function updateCharacterAndDraw() {
+try {
+const src = elCharacter.value;
 
-          renderPreviewOnly();
-        });
-
-        hexElement.addEventListener("change", () => {
-          const valid = normalizeHex(
-            hexElement.value,
-            state.design[stateKey]
-          );
-
-          hexElement.value = valid;
-          colorElement.value = valid;
-          state.design[stateKey] = valid;
-
-          if (stateKey === "nameColor" || stateKey === "titleColor") {
-            syncOverallTextColorDisplay();
-          }
-
-          renderPreviewOnly();
-        });
-      }
-
-      function saveLocal() {
-        const payload = {
-          people: state.people,
-          customLogos: state.customLogos,
-          design: state.design,
-          selectedIndex: state.selectedIndex
-        };
-
-        try {
-          localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(payload)
-          );
-        } catch (error) {
-          console.warn("자동 저장 실패:", error);
-        }
-      }
-
-      function restoreLocal() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-
-          if (!raw) return;
-
-          const saved = JSON.parse(raw);
-
-          if (Array.isArray(saved.customLogos)) {
-            state.customLogos = saved.customLogos.map(sanitizeCustomLogo);
-          }
-
-          if (Array.isArray(saved.people)) {
-            state.people =
-              saved.people.map(sanitizePerson);
-          }
-
-          const savedDesign = saved.design || {};
-          state.design = { ...defaultDesign, ...savedDesign };
-          if (savedDesign.textColor && !savedDesign.nameColor) state.design.nameColor = savedDesign.textColor;
-          if (savedDesign.textColor && !savedDesign.titleColor) state.design.titleColor = savedDesign.textColor;
-
-          state.selectedIndex = clamp(
-            saved.selectedIndex || 0,
-            0,
-            Math.max(0, state.people.length - 1)
-          );
-        } catch (error) {
-          console.warn("자동 복구 실패:", error);
-        }
-      }
-
-      function readImageFile(file) {
-        return new Promise((resolve, reject) => {
-          if (!file) {
-            reject(new Error("파일이 없습니다."));
-            return;
-          }
-
-          if (!file.type.startsWith("image/")) {
-            reject(new Error("이미지 파일만 올릴 수 있습니다."));
-            return;
-          }
-
-          if (file.size > 6 * 1024 * 1024) {
-            reject(new Error("로고는 6MB 이하 파일을 사용해 주세요."));
-            return;
-          }
-
-          const reader = new FileReader();
-
-          reader.onload = () =>
-            resolve(String(reader.result || ""));
-
-          reader.onerror = () =>
-            reject(new Error("이미지를 읽지 못했습니다."));
-
-          reader.readAsDataURL(file);
-        });
-      }
-
-      function downloadText(
-        filename,
-        text,
-        type = "application/json"
-      ) {
-        const blob = new Blob([text], { type });
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-
-        anchor.href = url;
-        anchor.download = filename;
-
-        document.body.appendChild(anchor);
-        anchor.click();
-        anchor.remove();
-
-        URL.revokeObjectURL(url);
-      }
-
-      function exportProject() {
-        const payload = {
-          app: "nameplate-maker",
-          version: "2.2.1",
-          savedAt: new Date().toISOString(),
-          people: state.people,
-          customLogos: state.customLogos,
-          design: state.design
-        };
-
-        downloadText(
-          `명패작업_${new Date().toISOString().slice(0,10)}.json`,
-          JSON.stringify(payload, null, 2)
-        );
-
-        showStatus("현재 명단·로고·디자인을 작업 파일로 저장했습니다.");
-      }
-
-      function importProject(file) {
-        const reader = new FileReader();
-
-        reader.onload = () => {
-          try {
-            const parsed =
-              JSON.parse(String(reader.result || ""));
-
-            if (!Array.isArray(parsed.people)) {
-              throw new Error("명단 형식이 없습니다.");
-            }
-
-            state.customLogos = Array.isArray(parsed.customLogos)
-              ? parsed.customLogos.map(sanitizeCustomLogo)
-              : [];
-
-            state.people = parsed.people.map(sanitizePerson);
-
-            const importedDesign = parsed.design || {};
-            state.design = { ...defaultDesign, ...importedDesign };
-            if (importedDesign.textColor && !importedDesign.nameColor) state.design.nameColor = importedDesign.textColor;
-            if (importedDesign.textColor && !importedDesign.titleColor) state.design.titleColor = importedDesign.textColor;
-
-            state.selectedIndex = 0;
-
-            renderAll();
-            showStatus("작업 파일을 불러왔습니다.");
-          } catch (error) {
-            showStatus(
-              "작업 파일을 읽지 못했습니다. 올바른 JSON 파일인지 확인해 주세요."
-            );
-          }
-        };
-
-        reader.readAsText(file, "utf-8");
-      }
-
-      function loadDelimitedFile(file) {
-        const reader = new FileReader();
-
-        reader.onload = () => {
-          const people = parseRows(reader.result);
-
-          if (!people.length) {
-            showStatus(
-              "명단을 찾지 못했습니다. 열 순서는 이름, 소속, 직책, 좌측 로고입니다."
-            );
-            return;
-          }
-
-          state.people = people;
-          state.selectedIndex = 0;
-
-          renderAll();
-          showStatus(`${people.length}명의 명단을 불러왔습니다.`);
-        };
-
-        reader.readAsText(file, "utf-8");
-      }
-
-      function printPages(mode) {
-        if (!state.people.length) {
-          showStatus("먼저 명단을 추가해 주세요.");
+        if (!src) {
+          selectedCharImg = null;
+          elCharPreview.removeAttribute("src");
+          drawCard();
           return;
         }
 
-        $$(".print-stage .paper-page").forEach(
-          (page, index) => {
-            page.classList.toggle(
-              "is-current",
-              index === state.selectedIndex
-            );
-          }
-        );
+selectedCharImg = await loadImage(src);
+elCharPreview.src = src;
+drawCard();
+@@ -762,19 +1097,89 @@ <h1>메일 명함 생성기</h1>
+function moveCharacter(direction) {
+if (!filteredCharacters.length) return;
 
-        document.body.classList.toggle(
-          "print-current",
-          mode === "current"
-        );
+      let idx = filteredCharacters.findIndex(c => c.file === elCharacter.value);
+      let index = filteredCharacters.findIndex(char => char.file === elCharacter.value);
 
-        requestAnimationFrame(() => {
-          fitText(elements.printStage);
-          window.print();
-        });
+      if (idx < 0) idx = 0;
+      if (index < 0) index = 0;
+
+      idx += direction;
+      index += direction;
+
+      if (idx < 0) idx = filteredCharacters.length - 1;
+      if (idx >= filteredCharacters.length) idx = 0;
+      if (index < 0) index = filteredCharacters.length - 1;
+      if (index >= filteredCharacters.length) index = 0;
+
+      elCharacter.value = filteredCharacters[idx].file;
+      elCharacter.value = filteredCharacters[index].file;
+updateCharacterAndDraw();
+}
+
+    function updateImageModeUI() {
+      const mode = elImageMode.value;
+
+      elCharacterControls.classList.toggle("hidden", mode !== "character");
+      elPhotoControls.classList.toggle("hidden", mode !== "photo");
+
+      drawCard();
+    }
+
+    function clearUploadedPhoto() {
+      uploadedPhotoImg = null;
+      elPhotoUpload.value = "";
+      elPhotoPreview.removeAttribute("src");
+
+      if (uploadedPhotoUrl) {
+        URL.revokeObjectURL(uploadedPhotoUrl);
+        uploadedPhotoUrl = null;
+      }
+    }
+
+    function handlePhotoUpload() {
+      const file = elPhotoUpload.files?.[0];
+
+      if (!file) {
+        clearUploadedPhoto();
+        drawCard();
+        return;
       }
 
-      function createTestPrintPage() {
-        const page = document.createElement("div");
-        page.className = "paper-page test-print-page";
+      const allowedTypes = ["image/png", "image/jpeg", "image/webp"];
 
-        const head = document.createElement("div");
-        head.className = "test-print-head";
-        head.innerHTML =
-          '인쇄 배율 확인용 100mm 테스트' +
-          '<div class="test-print-sub">아래 선을 자로 재서 정확히 100mm인지 확인하세요. 다르면 인쇄 배율을 100%로 다시 설정하세요.</div>';
-
-        const rulerWrap = document.createElement("div");
-        rulerWrap.className = "test-ruler-wrap";
-
-        const line = document.createElement("div");
-        line.className = "test-ruler-line";
-
-        const label = document.createElement("div");
-        label.className = "test-ruler-label";
-        label.textContent = "정확히 100mm";
-
-        rulerWrap.append(line, label);
-
-        const person =
-          state.people[state.selectedIndex] ||
-          state.people[0] ||
-          {
-            name: "TEST",
-            org: "한양대학교",
-            role: "인쇄 확인",
-            logoKey: "default"
-          };
-
-        const sample = createNameplate(person, false);
-
-        page.append(head, rulerWrap, sample);
-        return page;
+      if (!allowedTypes.includes(file.type)) {
+        alert("PNG, JPG, JPEG, WEBP 이미지 파일만 선택할 수 있어.");
+        clearUploadedPhoto();
+        drawCard();
+        return;
       }
 
-      function printTestPage() {
-        document.body.classList.remove("print-current");
+      const maxFileSize = 20 * 1024 * 1024;
 
-        elements.printStage.replaceChildren(
-          createTestPrintPage()
-        );
-
-        const restoreAfterPrint = () => {
-          renderPreviewOnly();
-        };
-
-        window.addEventListener(
-          "afterprint",
-          restoreAfterPrint,
-          { once: true }
-        );
-
-        requestAnimationFrame(() => {
-          fitText(elements.printStage);
-          window.print();
-        });
+      if (file.size > maxFileSize) {
+        alert("사진 파일은 20MB 이하만 사용할 수 있어.");
+        clearUploadedPhoto();
+        drawCard();
+        return;
       }
 
-      function buildFeedbackText() {
-        const type =
-          elements.feedbackType.value || "기타";
-
-        const name =
-          elements.feedbackName.value.trim() || "미기재";
-
-        const text =
-          elements.feedbackText.value.trim();
-
-        if (!text) return "";
-
-        return [
-          `[명패 생성기 수정요청]`,
-          ``,
-          `종류: ${type}`,
-          `작성자·부서: ${name}`,
-          `버전: v2.8.1`,
-          ``,
-          `내용`,
-          text
-        ].join("\n");
+      if (uploadedPhotoUrl) {
+        URL.revokeObjectURL(uploadedPhotoUrl);
       }
 
-      function copyToClipboard(text) {
-        if (navigator.clipboard && window.isSecureContext) {
-          return navigator.clipboard.writeText(text);
-        }
+      uploadedPhotoUrl = URL.createObjectURL(file);
 
-        return new Promise((resolve, reject) => {
-          try {
-            const textarea = document.createElement("textarea");
-            textarea.value = text;
-            textarea.style.position = "fixed";
-            textarea.style.opacity = "0";
+      const image = new Image();
 
-            document.body.appendChild(textarea);
-            textarea.focus();
-            textarea.select();
+      image.onload = () => {
+        uploadedPhotoImg = image;
+        elPhotoPreview.src = uploadedPhotoUrl;
+        drawCard();
+      };
 
-            document.execCommand("copy");
-            textarea.remove();
+      image.onerror = () => {
+        alert("사진을 불러오지 못했어. 다른 이미지 파일로 다시 시도해봐.");
+        clearUploadedPhoto();
+        drawCard();
+      };
 
-            resolve();
-          } catch (error) {
-            reject(error);
-          }
-        });
+      image.src = uploadedPhotoUrl;
+    }
+
+function updateRangeLabels() {
+elNameOffsetXValue.textContent = elNameOffsetX.value;
+elNameOffsetYValue.textContent = elNameOffsetY.value;
+@@ -783,6 +1188,10 @@ <h1>메일 명함 생성기</h1>
+elCharOffsetXValue.textContent = elCharOffsetX.value;
+elCharOffsetYValue.textContent = elCharOffsetY.value;
+elCharScaleValue.textContent = elCharScale.value;
+
+      elPhotoOffsetXValue.textContent = elPhotoOffsetX.value;
+      elPhotoOffsetYValue.textContent = elPhotoOffsetY.value;
+      elPhotoScaleValue.textContent = elPhotoScale.value;
+}
+
+function getExportWidth() {
+@@ -796,13 +1205,28 @@ <h1>메일 명함 생성기</h1>
+return Math.min(Math.max(Math.round(rawValue), 100), 5000);
+}
+
+    function getSelectedImageLabel() {
+      const mode = elImageMode.value;
+
+      if (mode === "character") {
+        return elCharacter.options[elCharacter.selectedIndex]?.textContent || "";
       }
 
-      function sendFeedbackToGithub() {
-        const body = buildFeedbackText();
-
-        if (!body) {
-          showStatus("수정요청 내용을 먼저 적어 주세요.");
-          return;
-        }
-
-        const title =
-          `[${elements.feedbackType.value}] 명패 생성기 수정요청`;
-
-        const url =
-          `${FEEDBACK_ISSUE_URL}?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
-
-        window.open(url, "_blank", "noopener,noreferrer");
+      if (mode === "photo") {
+        return uploadedPhotoImg ? "uploaded_photo" : "photo_not_selected";
       }
 
-      function sendFeedbackByMail() {
-        const body = buildFeedbackText();
+      return "none";
+    }
 
-        if (!body) {
-          showStatus("수정요청 내용을 먼저 적어 주세요.");
-          return;
-        }
+function trackDownloadEvent(exportWidth) {
+if (typeof gtag !== "function") return;
 
-        const subject =
-          `[${elements.feedbackType.value}] 명패 생성기 수정요청`;
+gtag("event", "png_download", {
+event_category: "mail_card",
+event_label: elLogoType.value,
+        character: elCharacter.options[elCharacter.selectedIndex]?.textContent || "",
+        image_mode: elImageMode.value,
+        image_label: getSelectedImageLabel(),
+export_width: exportWidth,
+has_work: elWork.value.trim() ? "yes" : "no",
+name_length: elName.value.trim().length
+@@ -851,6 +1275,8 @@ <h1>메일 명함 생성기</h1>
+elBoldContact.checked = true;
+elBoldAddress.checked = true;
 
-        if (!FEEDBACK_EMAIL) {
-          copyToClipboard(body)
-            .then(() => {
-              showStatus(
-                "FEEDBACK_EMAIL이 비어 있어 요청 내용을 복사했습니다. 코드의 FEEDBACK_EMAIL에 받을 주소를 입력해 주세요."
-              );
-            })
-            .catch(() => {
-              showStatus(
-                "FEEDBACK_EMAIL이 비어 있습니다. 코드 상단에 받을 이메일 주소를 입력해 주세요."
-              );
-            });
+      elImageMode.value = "character";
 
-          return;
-        }
+elCategory.value = "all";
+refreshCharacterOptions();
 
-        const mailto =
-          `mailto:${encodeURIComponent(FEEDBACK_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+@@ -862,21 +1288,29 @@ <h1>메일 명함 생성기</h1>
+elCharOffsetY.value = 0;
+elCharScale.value = 100;
 
-        window.location.href = mailto;
-      }
+      clearUploadedPhoto();
+      elPhotoShape.value = "rounded";
+      elPhotoOffsetX.value = 0;
+      elPhotoOffsetY.value = 0;
+      elPhotoScale.value = 100;
 
-      window.addEventListener("afterprint", () => {
-        document.body.classList.remove("print-current");
-      });
+updateRangeLabels();
+      updateImageModeUI();
+updateCharacterAndDraw();
+drawCard();
+}
 
-      $("#replaceBulkBtn").addEventListener("click", () => {
-        const people = parseRows(elements.bulkInput.value);
+function bindEvents() {
+      [elName, elTitle, elTeam, elWork, elEmail, elPhone, elAddress].forEach(el => {
+        el.addEventListener("input", drawCard);
+      [elName, elTitle, elTeam, elWork, elEmail, elPhone, elAddress].forEach(element => {
+        element.addEventListener("input", drawCard);
+});
 
-        if (!people.length) {
-          showStatus("붙여넣은 명단을 읽지 못했습니다.");
-          return;
-        }
+      [elBoldName, elBoldTitle, elBoldTeam, elBoldWork, elBoldContact, elBoldAddress].forEach(el => {
+        el.addEventListener("change", drawCard);
+      [elBoldName, elBoldTitle, elBoldTeam, elBoldWork, elBoldContact, elBoldAddress].forEach(element => {
+        element.addEventListener("change", drawCard);
+});
 
-        state.people = people;
-        state.selectedIndex = 0;
+elLogoType.addEventListener("change", drawCard);
+      elImageMode.addEventListener("change", updateImageModeUI);
 
-        renderAll();
-        showStatus(`${people.length}명의 명단으로 교체했습니다.`);
-      });
+elCategory.addEventListener("change", () => {
+refreshCharacterOptions();
+@@ -888,21 +1322,41 @@ <h1>메일 명함 생성기</h1>
+document.getElementById("prevBtn").addEventListener("click", () => moveCharacter(-1));
+document.getElementById("nextBtn").addEventListener("click", () => moveCharacter(1));
 
-      $("#appendBulkBtn").addEventListener("click", () => {
-        const people = parseRows(elements.bulkInput.value);
+      [elNameOffsetX, elNameOffsetY, elNameScale, elCharOffsetX, elCharOffsetY, elCharScale].forEach(el => {
+        el.addEventListener("input", () => {
+      elPhotoUpload.addEventListener("change", handlePhotoUpload);
+      elPhotoShape.addEventListener("change", drawCard);
 
-        if (!people.length) {
-          showStatus("붙여넣은 명단을 읽지 못했습니다.");
-          return;
-        }
+      [
+        elNameOffsetX,
+        elNameOffsetY,
+        elNameScale,
+        elCharOffsetX,
+        elCharOffsetY,
+        elCharScale,
+        elPhotoOffsetX,
+        elPhotoOffsetY,
+        elPhotoScale
+      ].forEach(element => {
+        element.addEventListener("input", () => {
+updateRangeLabels();
+drawCard();
+});
+});
 
-        state.people.push(...people);
+document.getElementById("downloadBtn").addEventListener("click", downloadPNG);
+document.getElementById("resetBtn").addEventListener("click", resetDefaults);
 
-        renderAll();
-        showStatus(
-          `${people.length}명을 기존 명단 뒤에 추가했습니다.`
-        );
-      });
-
-      $("#addPersonBtn").addEventListener("click", () => {
-        state.people.push(
-          sanitizePerson({
-            logoKey: "default"
-          })
-        );
-
-        state.selectedIndex =
-          state.people.length - 1;
-
-        renderAll();
-      });
-
-      $("#clearPeopleBtn").addEventListener("click", () => {
-        if (!confirm("현재 명단을 전부 삭제할까요?")) return;
-
-        state.people = [];
-        state.selectedIndex = 0;
-
-        renderAll();
-      });
-
-      $("#csvImportBtn").addEventListener("click", () => {
-        elements.csvFileInput.click();
-      });
-
-      elements.csvFileInput.addEventListener("change", () => {
-        const file =
-          elements.csvFileInput.files?.[0];
-
-        if (file) {
-          loadDelimitedFile(file);
-        }
-
-        elements.csvFileInput.value = "";
-      });
-
-      elements.defaultLeftLogo.addEventListener("change", () => {
-        state.design.defaultLeftLogo = elements.defaultLeftLogo.value;
-        renderAll();
-      });
-
-      $("#addCustomLogoBtn").addEventListener("click", async () => {
-        const name = elements.customLogoName.value.trim();
-        const file = elements.customLogoFile.files?.[0];
-
-        if (!name) {
-          showStatus("외부기관 이름을 입력해 주세요.");
-          return;
-        }
-
-        if (!file) {
-          showStatus("외부기관 로고 파일을 선택해 주세요.");
-          return;
-        }
-
-        if (
-          state.customLogos.some(
-            logo => logo.name.trim().toLowerCase() === name.toLowerCase()
-          )
-        ) {
-          showStatus("같은 이름의 외부기관 로고가 이미 있습니다.");
-          return;
-        }
-
-        try {
-          const dataUrl = await readImageFile(file);
-
-          state.customLogos.push({
-            id: "custom-" + cryptoId(),
-            name,
-            dataUrl
-          });
-
-          elements.customLogoName.value = "";
-          elements.customLogoFile.value = "";
-
-          renderAll();
-          showStatus(`'${name}' 좌측 로고를 추가했습니다.`);
-        } catch (error) {
-          showStatus(
-            error.message || "외부기관 로고를 추가하지 못했습니다."
-          );
+      window.addEventListener("beforeunload", () => {
+        if (uploadedPhotoUrl) {
+          URL.revokeObjectURL(uploadedPhotoUrl);
         }
       });
+}
 
-      elements.footerLogo.addEventListener("change", () => {
-        state.design.footerLogo = elements.footerLogo.value;
-        renderPreviewOnly();
-      });
+async function init() {
+bindEvents();
+refreshCharacterOptions();
+updateRangeLabels();
+      updateImageModeUI();
 
-      elements.templateCards.forEach(card => {
-        card.addEventListener("click", () => {
-          setTemplateStyle(card.dataset.template, true);
-          showStatus(`${PLATE_TEMPLATES[card.dataset.template]?.label || "디자인"}을 적용했습니다.`);
-        });
-      });
+templateImg.src = "assets/template.png";
 
-      elements.recommendedColorBtn.addEventListener("click", () => {
-        applyRecommendedColors();
-        syncControlsFromState();
-        renderPreviewOnly();
-        showStatus("현재 디자인의 추천 색상을 적용했습니다.");
-      });
+@@ -915,7 +1369,6 @@ <h1>메일 명함 생성기</h1>
+logoImages.hanyang = await loadImage(CONFIG.logos.hanyang.src);
 
-      elements.titleSeparator.addEventListener("change", () => {
-        state.design.titleSeparator =
-          elements.titleSeparator.value;
+await updateCharacterAndDraw();
 
-        renderPreviewOnly();
-      });
-
-      elements.overallTextColor.addEventListener("input", () => {
-        elements.overallTextColorHex.value = elements.overallTextColor.value;
-        setOverallTextColor(elements.overallTextColor.value);
-      });
-
-      elements.overallTextColorHex.addEventListener("change", () => {
-        const valid = normalizeHex(
-          elements.overallTextColorHex.value,
-          state.design.nameColor
-        );
-
-        elements.overallTextColor.value = valid;
-        elements.overallTextColorHex.value = valid;
-        setOverallTextColor(valid);
-      });
-
-      elements.paletteChips.forEach(chip => {
-        chip.addEventListener("click", () => {
-          const color = chip.dataset.color;
-          const label = chip.dataset.label || color;
-          const target = elements.paletteTarget.value;
-
-          applyPaletteColor(color, target);
-          showStatus(`${label} 색상을 적용했습니다.`);
-        });
-      });
-
-      bindColor(
-        elements.nameColor,
-        elements.nameColorHex,
-        "nameColor"
-      );
-
-      bindColor(
-        elements.titleColor,
-        elements.titleColorHex,
-        "titleColor"
-      );
-
-      bindColor(
-        elements.borderColor,
-        elements.borderColorHex,
-        "borderColor"
-      );
-
-      bindPair("nameSize", 40, 105);
-      bindPair("nameX", -35, 35);
-      bindPair("nameY", -20, 20);
-
-      bindPair("titleSize", 15, 44);
-      bindPair("titleX", -35, 35);
-      bindPair("titleY", -18, 18);
-
-      bindPair("nameSpacing", -2, 35);
-      bindPair("logoWidth", 20, 65);
-      bindPair("logoX", -25, 25);
-      bindPair("logoY", -20, 20);
-      bindPair("footerLogoWidth", 20, 90);
-      bindPair("footerLogoX", -35, 35);
-      bindPair("footerLogoY", -15, 15);
-
-      elements.autoFit.addEventListener("change", () => {
-        state.design.autoFit =
-          elements.autoFit.checked;
-
-        renderPreviewOnly();
-      });
-
-      elements.rotateBack.addEventListener("change", () => {
-        state.design.rotateBack =
-          elements.rotateBack.checked;
-
-        renderPreviewOnly();
-      });
-
-      elements.showPageLabel.addEventListener("change", () => {
-        state.design.showPageLabel =
-          elements.showPageLabel.checked;
-
-        renderPreviewOnly();
-      });
-
-      elements.platePreset.addEventListener("change", () => {
-        const key = elements.platePreset.value;
-
-        if (key === "custom") {
-          state.design.platePreset = "custom";
-          return;
-        }
-
-        const preset = PLATE_SIZE_PRESETS[key];
-
-        if (preset) {
-          setPlateSize(preset.width, preset.height, key);
-          showStatus(`${preset.label} 규격을 적용했습니다.`);
-        }
-      });
-
-      function handleCustomPlateSize() {
-        setPlateSize(
-          Number(elements.plateWidth.value),
-          Number(elements.plateHeight.value)
-        );
-      }
-
-      elements.plateWidth.addEventListener("change", handleCustomPlateSize);
-      elements.plateHeight.addEventListener("change", handleCustomPlateSize);
-
-      elements.autoScaleElements.addEventListener("change", () => {
-        state.design.autoScaleElements =
-          elements.autoScaleElements.checked;
-
-        renderPreviewOnly();
-      });
-
-      elements.showCutMarks.addEventListener("change", () => {
-        state.design.showCutMarks =
-          elements.showCutMarks.checked;
-
-        renderPreviewOnly();
-      });
-
-      elements.resetAdjustmentsBtn.addEventListener("click", () => {
-        if (!confirm("현재 명패 규격에 맞춰 위치·크기 조절값을 초기화할까요?")) {
-          return;
-        }
-
-        resetAdjustments();
-        showStatus("위치·크기 조절값을 초기화했습니다.");
-      });
-
-      elements.settingsLockBtn.addEventListener("click", () => {
-        state.design.settingsLocked =
-          !state.design.settingsLocked;
-
-        applySettingsLock();
-        saveLocal();
-
-        showStatus(
-          state.design.settingsLocked
-            ? "디자인 설정을 잠갔습니다."
-            : "디자인 설정 잠금을 해제했습니다."
-        );
-      });
-
-      elements.testPrintBtn.addEventListener("click", () => {
-        printTestPage();
-      });
-
-      $("#prevBtn").addEventListener("click", () => {
-        if (!state.people.length) return;
-
-        state.selectedIndex =
-          (state.selectedIndex - 1 + state.people.length) %
-          state.people.length;
-
-        renderPreviewOnly();
-      });
-
-      $("#nextBtn").addEventListener("click", () => {
-        if (!state.people.length) return;
-
-        state.selectedIndex =
-          (state.selectedIndex + 1) %
-          state.people.length;
-
-        renderPreviewOnly();
-      });
-
-      $("#printCurrentBtn").addEventListener(
-        "click",
-        () => printPages("current")
-      );
-
-      $("#printAllBtn").addEventListener(
-        "click",
-        () => printPages("all")
-      );
-
-      $("#saveProjectBtn").addEventListener(
-        "click",
-        exportProject
-      );
-
-      $("#loadProjectBtn").addEventListener("click", () => {
-        elements.projectFileInput.click();
-      });
-
-      elements.projectFileInput.addEventListener("change", () => {
-        const file =
-          elements.projectFileInput.files?.[0];
-
-        if (file) {
-          importProject(file);
-        }
-
-        elements.projectFileInput.value = "";
-      });
-
-      $("#saveDesignBtn").addEventListener("click", () => {
-        localStorage.setItem(
-          DESIGN_KEY,
-          JSON.stringify(state.design)
-        );
-
-        showStatus(
-          "현재 디자인을 이 브라우저의 기본값으로 저장했습니다."
-        );
-      });
-
-      $("#resetDesignBtn").addEventListener("click", () => {
-        if (!confirm("디자인 설정을 초기값으로 되돌릴까요?")) {
-          return;
-        }
-
-        state.design = { ...defaultDesign };
-
-        renderAll();
-        showStatus("디자인을 초기화했습니다.");
-      });
-
-      $("#feedbackIssueBtn").addEventListener(
-        "click",
-        sendFeedbackToGithub
-      );
-
-      $("#feedbackMailBtn").addEventListener(
-        "click",
-        sendFeedbackByMail
-      );
-
-      $("#feedbackCopyBtn").addEventListener("click", () => {
-        const body = buildFeedbackText();
-
-        if (!body) {
-          showStatus("수정요청 내용을 먼저 적어 주세요.");
-          return;
-        }
-
-        copyToClipboard(body)
-          .then(() => {
-            showStatus("수정요청 내용을 복사했습니다.");
-          })
-          .catch(() => {
-            showStatus(
-              "복사하지 못했습니다. 내용을 직접 선택해 복사해 주세요."
-            );
-          });
-      });
-
-      window.addEventListener(
-        "resize",
-        fitPreviewScale
-      );
-
-      if ("ResizeObserver" in window) {
-        const resizeObserver =
-          new ResizeObserver(fitPreviewScale);
-
-        resizeObserver.observe(
-          elements.previewZone
-        );
-      }
-
-      try {
-        const savedDesign =
-          JSON.parse(
-            localStorage.getItem(DESIGN_KEY) ||
-            "null"
-          );
-
-        if (
-          savedDesign &&
-          typeof savedDesign === "object"
-        ) {
-          state.design = { ...state.design, ...savedDesign };
-          if (savedDesign.textColor && !savedDesign.nameColor) state.design.nameColor = savedDesign.textColor;
-          if (savedDesign.textColor && !savedDesign.titleColor) state.design.titleColor = savedDesign.textColor;
-        }
-      } catch (_) {}
-
-      restoreLocal();
-      renderAll();
-    })();
-  </script>
-</body>
-</html>
+drawCard();
+}
