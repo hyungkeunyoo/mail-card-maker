@@ -33,13 +33,14 @@
       margin: 24px auto;
       padding: 0 20px;
       display: grid;
-      grid-template-columns: 410px 1fr;
+      grid-template-columns: 410px minmax(0, 1fr);
       gap: 24px;
       align-items: start;
     }
 
     .panel,
     .preview {
+      min-width: 0;
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 8px 24px rgba(0,0,0,.08);
@@ -63,6 +64,7 @@
 
     .editor-heading {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
@@ -83,6 +85,83 @@
 
     .field {
       margin-bottom: 14px;
+    }
+
+    .template-picker {
+      min-width: 0;
+      margin: 0 0 14px;
+      padding: 0;
+      border: 0;
+    }
+
+    .template-picker legend {
+      margin-bottom: 8px;
+      padding: 0;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .template-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .template-option {
+      position: relative;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .template-option input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .template-card {
+      display: flex;
+      height: 100%;
+      min-height: 80px;
+      flex-direction: column;
+      gap: 6px;
+      padding: 5px;
+      border: 2px solid #d0d7de;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .template-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 2048 / 706;
+      border-radius: 4px;
+    }
+
+    .template-card-name {
+      margin: auto 0;
+      font-size: 11px;
+      line-height: 1.35;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .template-option input:checked + .template-card {
+      border-color: #0f4c81;
+      background: #eef5fb;
+      box-shadow: 0 0 0 1px #0f4c81;
+    }
+
+    .template-option input:checked + .template-card .template-card-name {
+      color: #0f4c81;
+      font-weight: 800;
+    }
+
+    .template-option input:focus-visible + .template-card {
+      outline: 3px solid #5b9bd5;
+      outline-offset: 2px;
     }
 
     .field label {
@@ -504,7 +583,7 @@
     <div class="panel">
       <div class="editor-heading">
         <h1>메일 명함 생성기</h1>
-        <span class="version-badge">V7.0.0 · FAST EDITOR</span>
+        <span class="version-badge">V7.1.0 · TEMPLATE COLLECTION</span>
       </div>
 
       <div class="mobile-preview" id="mobilePreview">
@@ -522,6 +601,12 @@
           <canvas id="mobileCanvas" width="2048" height="706" role="img" aria-label="메일 명함 실시간 미리보기"></canvas>
         </div>
       </div>
+
+      <fieldset class="template-picker" aria-describedby="templateStatus">
+        <legend>명함 디자인</legend>
+        <div class="template-options" id="templateOptions"></div>
+        <div class="help" id="templateStatus" role="status" aria-live="polite">기본형 · 총 6종</div>
+      </fieldset>
 
       <div class="field">
         <label for="logoType">상단 로고</label>
@@ -723,7 +808,7 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn-primary" id="downloadBtn" type="button">PNG 다운로드</button>
+        <button class="btn-primary" id="downloadBtn" type="button" disabled>PNG 다운로드</button>
         <button class="btn-secondary" id="resetBtn" type="button">기본값 복원</button>
       </div>
 
@@ -767,36 +852,9 @@
     </div>
   </dialog>
 
+  <script src="card-templates.js"></script>
   <script>
     const FONT_FAMILY = '"Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif';
-
-    const CONFIG = {
-      width: 2048,
-      height: 706,
-
-      logos: {
-        erica: { src: "assets/logos/hyu_erica.png", x: 1642, y: 54, w: 340, h: 70 },
-        hanyang: { src: "assets/logos/hyu.png", x: 1666, y: 56, w: 300, h: 72 }
-      },
-
-      name: { x: 120, y: 142, maxWidth: 610, startSize: 142, minSize: 56, color: "#0f4c81" },
-      title: { x: 725, y: 236, maxWidth: 240, startSize: 68, minSize: 34, color: "#333333" },
-
-      teamWithWork: { x: 118, y: 356, maxWidth: 790, startSize: 42, minSize: 22, color: "#333333" },
-      teamWithoutWork: { x: 118, y: 376, maxWidth: 790, startSize: 46, minSize: 24, color: "#333333" },
-
-      work: { x: 118, y: 414, maxWidth: 860, startSize: 30, minSize: 16, color: "#555555" },
-
-      et: { x: 1005, emailY: 316, phoneY: 396, size: 44, color: "#333333" },
-
-      email: { x: 1074, y: 316, maxWidth: 460, startSize: 42, minSize: 28, color: "#333333" },
-      phone: { x: 1074, y: 396, maxWidth: 460, startSize: 42, minSize: 22, color: "#333333" },
-
-      addressWithWork: { x: 118, y: 522, maxWidth: 1370, startSize: 40, minSize: 22, color: "#333333" },
-      addressWithoutWork: { x: 118, y: 505, maxWidth: 1370, startSize: 40, minSize: 22, color: "#333333" },
-
-      characterBox: { x: 1570, y: 150, w: 360, h: 430 }
-    };
 
     function makeCharacters() {
       const list = [];
@@ -861,6 +919,8 @@
     const mobileCanvas = document.getElementById("mobileCanvas");
     const mobileCtx = mobileCanvas.getContext("2d");
 
+    const elTemplateOptions = document.getElementById("templateOptions");
+    const elTemplateStatus = document.getElementById("templateStatus");
     const elLogoType = document.getElementById("logoType");
     const elName = document.getElementById("name");
     const elTitle = document.getElementById("title");
@@ -920,7 +980,12 @@
     const elPhotoOffsetYValue = document.getElementById("photoOffsetYValue");
     const elPhotoScaleValue = document.getElementById("photoScaleValue");
 
-    const templateImg = new Image();
+    let selectedTemplateId = "default";
+    let templateImg = null;
+    let templateLoadRequestId = 0;
+    let isTemplateLoading = true;
+    let templateError = "";
+    let appReady = false;
     let selectedCharImg = new Image();
     let uploadedPhotoImg = null;
     let uploadedPhotoUrl = null;
@@ -943,6 +1008,86 @@
       phone: "전화번호",
       address: "주소"
     };
+
+    function getTemplate() {
+      return CARD_TEMPLATES[selectedTemplateId];
+    }
+
+    function renderTemplateOptions() {
+      Object.values(CARD_TEMPLATES).forEach(template => {
+        const label = document.createElement("label");
+        label.className = "template-option";
+        label.title = template.description;
+
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "cardTemplate";
+        input.value = template.id;
+        input.checked = template.id === selectedTemplateId;
+
+        const card = document.createElement("span");
+        card.className = "template-card";
+        const thumbnail = document.createElement("img");
+        thumbnail.src = template.thumbnail;
+        thumbnail.alt = "";
+        thumbnail.width = 360;
+        thumbnail.height = 124;
+        thumbnail.decoding = "async";
+        const name = document.createElement("span");
+        name.className = "template-card-name";
+        name.textContent = template.name;
+        card.append(thumbnail, name);
+        label.append(input, card);
+        elTemplateOptions.appendChild(label);
+
+        input.addEventListener("change", () => selectTemplate(template.id));
+        // A failed load can be retried by selecting the same radio again.
+        input.addEventListener("click", () => {
+          if (templateError && selectedTemplateId === template.id) selectTemplate(template.id);
+        });
+      });
+    }
+
+    function updateDownloadButton() {
+      elDownloadBtn.disabled = isDownloading || !appReady || isTemplateLoading || Boolean(templateError);
+    }
+
+    async function selectTemplate(id) {
+      if (!Object.hasOwn(CARD_TEMPLATES, id)) return;
+
+      const requestId = ++templateLoadRequestId;
+      selectedTemplateId = id;
+      isTemplateLoading = true;
+      templateError = "";
+      lastOverflowFields = [];
+      elTemplateOptions.querySelectorAll("input").forEach(input => {
+        input.checked = input.value === id;
+      });
+      elTemplateStatus.textContent = `${getTemplate().name} 불러오는 중…`;
+      elTemplateOptions.setAttribute("aria-busy", "true");
+      updateDownloadButton();
+      renderEditorMessages();
+
+      try {
+        const image = await loadImage(getTemplate().background);
+        if (requestId !== templateLoadRequestId) return;
+
+        templateImg = image;
+        elTemplateStatus.textContent = `${getTemplate().name} · 총 ${Object.keys(CARD_TEMPLATES).length}종`;
+      } catch (err) {
+        if (requestId !== templateLoadRequestId) return;
+        templateError = "디자인을 불러오지 못했어. 해당 디자인을 다시 선택해줘.";
+        elTemplateStatus.textContent = templateError;
+      } finally {
+        if (requestId === templateLoadRequestId) {
+          isTemplateLoading = false;
+          elTemplateOptions.removeAttribute("aria-busy");
+          updateDownloadButton();
+          renderEditorMessages();
+          scheduleDraw();
+        }
+      }
+    }
 
     function getWeight(checked, bold = 700, normal = 400) {
       return checked ? bold : normal;
@@ -1032,6 +1177,10 @@
     }
 
     function drawTextOneLine(text, opt, weight, fieldKey) {
+      const rightEdge = getTemplate().textRightEdges?.[fieldKey];
+      if (rightEdge !== undefined) {
+        opt = { ...opt, maxWidth: Math.max(1, Math.min(opt.maxWidth, rightEdge - opt.x)) };
+      }
       const finalText = (text || " ").trim() || " ";
       const size = fitFontSize(finalText, opt.maxWidth, opt.startSize, opt.minSize, weight);
       setFont(weight, size);
@@ -1075,6 +1224,12 @@
         startSize -= 12;
       }
 
+      // The supplied name/title boxes overlap horizontally in the new designs.
+      // Keep their source coordinates, but reserve space for a visible title.
+      if (selectedTemplateId !== "default" && elTitle.value.trim()) {
+        maxWidth = Math.max(1, Math.min(maxWidth, getTemplate().layout.title.x - opt.x - offsetX - 16));
+      }
+
       return drawTextOneLine(finalText, {
         ...opt,
         x: opt.x + offsetX,
@@ -1085,14 +1240,14 @@
       }, weight, "name");
     }
 
-    function drawET() {
+    function drawET(opt) {
       const weight = getWeight(elBoldContact.checked, 700, 400);
 
-      ctx.fillStyle = CONFIG.et.color;
+      ctx.fillStyle = opt.color;
       ctx.textBaseline = "top";
-      setFont(weight, CONFIG.et.size);
-      ctx.fillText("E", CONFIG.et.x, CONFIG.et.emailY);
-      ctx.fillText("T", CONFIG.et.x, CONFIG.et.phoneY);
+      setFont(weight, opt.size);
+      ctx.fillText("E", opt.x, opt.emailY);
+      ctx.fillText("T", opt.x, opt.phoneY);
     }
 
     function getTrimRect(img, trimWhite = true) {
@@ -1270,31 +1425,31 @@
       ctx.restore();
     }
 
-    function drawLogo() {
+    function drawLogo(layout) {
       const type = elLogoType.value;
 
       if (type === "none") return;
 
       const img = logoImages[type];
-      const box = CONFIG.logos[type];
+      const box = layout.logos[type];
 
       if (!img || !box) return;
 
       drawTrimmedInBox(img, box, false);
     }
 
-    function drawRightImage() {
+    function drawRightImage(layout) {
       const mode = elImageMode.value;
 
       if (mode === "character") {
         if (selectedCharImg && selectedCharImg.complete && selectedCharImg.naturalWidth > 0) {
-          drawContainTrimmedCharacter(selectedCharImg, CONFIG.characterBox);
+          drawContainTrimmedCharacter(selectedCharImg, layout.characterBox);
         }
         return;
       }
 
       if (mode === "photo") {
-        drawUploadedPhoto(uploadedPhotoImg, CONFIG.characterBox);
+        drawUploadedPhoto(uploadedPhotoImg, layout.characterBox);
       }
     }
 
@@ -1308,6 +1463,10 @@
     function collectValidationIssues() {
       const errors = [];
       const warnings = [];
+
+      if (templateError) {
+        errors.push({ field: elTemplateOptions.querySelector("input:checked"), message: templateError });
+      }
 
       if (!elName.value.trim()) {
         errors.push({ field: elName, message: "이름을 입력해줘." });
@@ -1359,22 +1518,38 @@
     }
 
     function drawCard() {
-      if (!templateImg.complete) return;
+      if (!appReady || isTemplateLoading || templateError || !templateImg?.naturalWidth) return;
 
+      const layout = getTemplate().layout;
       const hasWork = elWork.value.trim().length > 0;
-      const teamConfig = hasWork ? CONFIG.teamWithWork : CONFIG.teamWithoutWork;
-      const addressConfig = hasWork ? CONFIG.addressWithWork : CONFIG.addressWithoutWork;
+      const teamConfig = hasWork ? layout.teamWithWork : layout.teamWithoutWork;
+      let addressConfig = hasWork ? layout.addressWithWork : layout.addressWithoutWork;
+      const imageBox = layout.characterBox;
+      const hasRightImage = elImageMode.value === "character"
+        ? Boolean(selectedCharImg?.naturalWidth)
+        : elImageMode.value === "photo" && Boolean(uploadedPhotoImg?.naturalWidth);
+      // Gold's address area extends into the portrait area in the manifest.
+      // Apply the existing shrink/ellipsis safety within the available space.
+      if (selectedTemplateId !== "default" && hasRightImage &&
+          addressConfig.y < imageBox.y + imageBox.h &&
+          addressConfig.y + addressConfig.startSize * 1.45 > imageBox.y &&
+          addressConfig.x < imageBox.x) {
+        addressConfig = {
+          ...addressConfig,
+          maxWidth: Math.min(addressConfig.maxWidth, imageBox.x - addressConfig.x - 24)
+        };
+      }
       const textResults = [];
 
-      ctx.clearRect(0, 0, CONFIG.width, CONFIG.height);
-      ctx.drawImage(templateImg, 0, 0, CONFIG.width, CONFIG.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
-      drawLogo();
-      textResults.push(drawNameText(elName.value, CONFIG.name));
+      drawLogo(layout);
+      textResults.push(drawNameText(elName.value, layout.name));
 
       textResults.push(drawTextOneLine(
         elTitle.value,
-        CONFIG.title,
+        layout.title,
         getWeight(elBoldTitle.checked, 700, 400),
         "title"
       ));
@@ -1389,24 +1564,24 @@
       if (hasWork) {
         textResults.push(drawTextOneLine(
           elWork.value,
-          CONFIG.work,
+          layout.work,
           getWeight(elBoldWork.checked, 600, 400),
           "work"
         ));
       }
 
-      drawET();
+      drawET(layout.et);
 
       textResults.push(drawTextOneLine(
         elEmail.value,
-        CONFIG.email,
+        layout.email,
         getWeight(elBoldContact.checked, 700, 400),
         "email"
       ));
 
       textResults.push(drawTextOneLine(
         elPhone.value,
-        CONFIG.phone,
+        layout.phone,
         getWeight(elBoldContact.checked, 700, 400),
         "phone"
       ));
@@ -1418,7 +1593,7 @@
         "address"
       ));
 
-      drawRightImage();
+      drawRightImage(layout);
       lastOverflowFields = textResults
         .filter(result => result?.overflow)
         .map(result => result.fieldKey);
@@ -1632,7 +1807,7 @@
     }
 
     async function downloadPNG() {
-      if (isDownloading) return;
+      if (isDownloading || !appReady || isTemplateLoading || templateError) return;
 
       flushScheduledDraw();
 
@@ -1681,7 +1856,7 @@
         alert("PNG를 만들지 못했어. 잠시 후 다시 시도해줘.");
       } finally {
         isDownloading = false;
-        elDownloadBtn.disabled = false;
+        updateDownloadButton();
         elDownloadBtn.textContent = "PNG 다운로드";
         elDownloadBtn.removeAttribute("aria-busy");
       }
@@ -1689,6 +1864,7 @@
 
     function getEditorState() {
       return JSON.stringify({
+        templateId: selectedTemplateId,
         logoType: elLogoType.value,
         name: elName.value,
         title: elTitle.value,
@@ -1733,6 +1909,7 @@
     }
 
     function resetDefaults() {
+      selectTemplate("default");
       elLogoType.value = "erica";
 
       elName.value = "하냥이";
@@ -1842,29 +2019,30 @@
     }
 
     async function init() {
+      document.querySelector(".version-badge").textContent = APP_VERSION;
+      renderTemplateOptions();
       bindEvents();
       refreshCharacterOptions();
       updateRangeLabels();
       updateImageModeUI();
 
-      templateImg.src = "assets/template.png";
+      defaultEditorState = getEditorState();
 
-      await new Promise((resolve, reject) => {
-        templateImg.onload = resolve;
-        templateImg.onerror = reject;
-      });
-
-      logoImages.erica = await loadImage(CONFIG.logos.erica.src);
-      logoImages.hanyang = await loadImage(CONFIG.logos.hanyang.src);
-
-      await updateCharacterAndDraw();
+      await Promise.all([
+        selectTemplate("default"),
+        ...Object.entries(CARD_TEMPLATES.default.layout.logos).map(async ([type, logo]) => {
+          logoImages[type] = await loadImage(logo.src);
+        }),
+        updateCharacterAndDraw()
+      ]);
 
       if (document.fonts?.ready) {
         await document.fonts.ready;
       }
 
+      appReady = true;
+      updateDownloadButton();
       flushScheduledDraw();
-      defaultEditorState = getEditorState();
     }
 
     init().catch(err => {
