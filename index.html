@@ -414,6 +414,17 @@
       margin-bottom: 16px;
     }
 
+    details.section-box > summary {
+      min-height: 44px;
+      padding: 11px 0;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    details.section-box { padding-top: 2px; padding-bottom: 2px; }
+    details.section-box[open] { padding-bottom: 14px; }
+
     .section-title {
       margin: 0 0 12px;
       font-size: 15px;
@@ -605,17 +616,40 @@
       <fieldset class="template-picker" aria-describedby="templateStatus">
         <legend>명함 디자인</legend>
         <div class="template-options" id="templateOptions"></div>
-        <div class="help" id="templateStatus" role="status" aria-live="polite">기본형 · 총 3종</div>
+        <div class="help" id="templateStatus" role="status" aria-live="polite">기본형 · 총 7종</div>
       </fieldset>
 
       <div class="field">
-        <label for="logoType">상단 로고</label>
+        <label for="logoType">로고</label>
         <select id="logoType">
           <option value="erica">한양대학교 ERICA</option>
           <option value="hanyang">한양대</option>
+          <option value="custom">직접 올린 로고</option>
           <option value="none">로고 없음</option>
         </select>
       </div>
+
+      <div id="customLogoControls" class="field hidden">
+        <label for="logoUpload">로고 파일 선택</label>
+        <input id="logoUpload" type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" aria-describedby="logoUploadStatus" />
+        <div class="help" id="logoUploadStatus" role="status" aria-live="polite">PNG·JPG·WEBP, 최대 20MB. 투명 배경 PNG를 권장해.</div>
+        <div class="privacy-note">로고 파일은 현재 브라우저에서만 처리하며 서버에 업로드하지 않아.</div>
+      </div>
+
+      <details class="section-box" id="logoAdjustments">
+        <summary>로고 위치·크기·색상 조절</summary>
+        <div class="range-field">
+          <div class="range-row"><span>좌우</span><input id="logoOffsetX" type="range" min="-2000" max="2000" value="0" aria-label="로고 좌우 위치" /><span id="logoOffsetXValue">0</span></div>
+          <div class="range-row"><span>상하</span><input id="logoOffsetY" type="range" min="-650" max="650" value="0" aria-label="로고 상하 위치" /><span id="logoOffsetYValue">0</span></div>
+          <div class="range-row"><span>크기</span><input id="logoScale" type="range" min="25" max="250" value="100" aria-label="로고 크기" /><span id="logoScaleValue">100</span></div>
+        </div>
+        <div class="field">
+          <label for="logoColor">로고 색상</label>
+          <select id="logoColor"><option value="auto">자동 (직접 올린 로고는 원본)</option><option value="original">원본 색상</option><option value="white">흰색</option></select>
+          <div class="help">투명 로고는 어두운 배경에서 흰색으로 바꿀 수 있어.</div>
+        </div>
+        <button id="resetLogoPlacement" class="btn-secondary" type="button">로고 배치 초기화</button>
+      </details>
 
       <div class="field">
         <label for="name">이름 <span class="required-note">(필수)</span></label>
@@ -658,7 +692,7 @@
       <div class="field">
         <label for="exportWidth">다운로드 가로폭(px)</label>
         <input id="exportWidth" type="number" min="100" max="5000" value="750" />
-        <div class="help">기본값 750px. 메일에 작게 넣을 땐 500px, 크게 필요하면 1000px 이상 입력.</div>
+        <div class="help">기본값 750px, 최대 5000px. 선택한 해상도에서 글자와 로고를 직접 그려 저장해. 원본 이미지가 클수록 더 선명해.</div>
       </div>
 
       <div class="check-group">
@@ -675,7 +709,7 @@
 
       <div class="mode-box">
         <div class="field">
-          <label for="imageMode">오른쪽 이미지 유형</label>
+          <label for="imageMode">명함 이미지</label>
           <select id="imageMode">
             <option value="character">캐릭터 사용</option>
             <option value="photo">내 사진 사용</option>
@@ -915,13 +949,19 @@
     const characters = makeCharacters();
 
     const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
+    let ctx = canvas.getContext("2d");
     const mobileCanvas = document.getElementById("mobileCanvas");
     const mobileCtx = mobileCanvas.getContext("2d");
 
     const elTemplateOptions = document.getElementById("templateOptions");
     const elTemplateStatus = document.getElementById("templateStatus");
     const elLogoType = document.getElementById("logoType");
+    const elLogoUpload = document.getElementById("logoUpload");
+    const elLogoUploadStatus = document.getElementById("logoUploadStatus");
+    const elLogoOffsetX = document.getElementById("logoOffsetX");
+    const elLogoOffsetY = document.getElementById("logoOffsetY");
+    const elLogoScale = document.getElementById("logoScale");
+    const elLogoColor = document.getElementById("logoColor");
     const elName = document.getElementById("name");
     const elTitle = document.getElementById("title");
     const elTeam = document.getElementById("team");
@@ -989,6 +1029,11 @@
     let selectedCharImg = new Image();
     let uploadedPhotoImg = null;
     let uploadedPhotoUrl = null;
+    let uploadedLogoImg = null;
+    let uploadedLogoUrl = null;
+    let logoLoadRequestId = 0;
+    let isLogoLoading = false;
+    let logoError = "";
     let filteredCharacters = [];
     let characterLoadRequestId = 0;
     let drawFrameId = null;
@@ -998,6 +1043,7 @@
     const logoImages = {};
     const imageCache = new Map();
     const trimRectCache = new WeakMap();
+    const tintedLogoCache = new WeakMap();
 
     const FIELD_LABELS = {
       name: "이름",
@@ -1049,7 +1095,8 @@
     }
 
     function updateDownloadButton() {
-      elDownloadBtn.disabled = isDownloading || !appReady || isTemplateLoading || Boolean(templateError);
+      elDownloadBtn.disabled = isDownloading || !appReady || isTemplateLoading || Boolean(templateError) ||
+        (elLogoType.value === "custom" && isLogoLoading);
     }
 
     async function selectTemplate(id) {
@@ -1228,7 +1275,7 @@
 
       // Reserve room within the name/title row, then attach the title to the
       // actual rendered name width instead of leaving a fixed empty gap.
-      if (elTitle.value.trim()) {
+      if (elTitle.value.trim() && getTemplate().layout.nameTitlePlacement !== "below") {
         const layout = getTemplate().layout;
         const titleWeight = getWeight(elBoldTitle.checked, 700, 400);
         setFont(titleWeight, layout.title.startSize);
@@ -1250,6 +1297,14 @@
     function drawTitleBesideName(nameResult, layout) {
       const text = elTitle.value.trim();
       const weight = getWeight(elBoldTitle.checked, 700, 400);
+      if (layout.nameTitlePlacement === "below") {
+        const size = fitFontSize(text, layout.title.maxWidth, layout.title.startSize, layout.title.minSize, weight);
+        setFont(weight, size);
+        ctx.textBaseline = "top";
+        const displayText = ctx.measureText(text).width > layout.title.maxWidth ? ellipsizeText(text, layout.title.maxWidth) : text;
+        const y = nameResult.bottom + layout.nameTitleGap + ctx.measureText(displayText).actualBoundingBoxAscent;
+        return drawTextOneLine(text, { ...layout.title, x: layout.name.x + Number(elNameOffsetX.value), y }, weight, "title");
+      }
       const x = nameResult.right + layout.nameTitleGap;
       const maxWidth = Math.max(1, Math.min(layout.title.maxWidth, layout.title.x + layout.title.maxWidth - x));
       const size = fitFontSize(text, maxWidth, layout.title.startSize, layout.title.minSize, weight);
@@ -1451,12 +1506,96 @@
 
       if (type === "none") return;
 
-      const img = logoImages[type];
-      const box = layout.logos[type];
+      let img = type === "custom" ? uploadedLogoImg : logoImages[type];
+      const baseBox = layout.logos[type] || layout.logos.erica;
 
-      if (!img || !box) return;
+      if (!img || !baseBox) return;
+
+      const color = elLogoColor.value === "white" ? "#ffffff"
+        : elLogoColor.value === "auto" && type !== "custom" ? layout.logoTint : null;
+      if (color) {
+        let variants = tintedLogoCache.get(img);
+        if (!variants) {
+          variants = new Map();
+          tintedLogoCache.set(img, variants);
+        }
+        if (!variants.has(color)) {
+          const tinted = document.createElement("canvas");
+          tinted.width = img.naturalWidth;
+          tinted.height = img.naturalHeight;
+          const tintCtx = tinted.getContext("2d");
+          tintCtx.drawImage(img, 0, 0);
+          tintCtx.globalCompositeOperation = "source-in";
+          tintCtx.fillStyle = color;
+          tintCtx.fillRect(0, 0, tinted.width, tinted.height);
+          variants.set(color, tinted);
+        }
+        img = variants.get(color);
+      }
+
+      const scale = Number(elLogoScale.value) / 100;
+      const w = baseBox.w * scale;
+      const h = baseBox.h * scale;
+      const box = {
+        x: baseBox.x + (baseBox.w - w) / 2 + Number(elLogoOffsetX.value),
+        y: baseBox.y + (baseBox.h - h) / 2 + Number(elLogoOffsetY.value), w, h
+      };
 
       drawTrimmedInBox(img, box, false);
+    }
+
+    function updateLogoUI() {
+      document.getElementById("customLogoControls").classList.toggle("hidden", elLogoType.value !== "custom");
+      updateDownloadButton();
+      scheduleDraw();
+    }
+
+    function clearUploadedLogo(clearInput = true) {
+      ++logoLoadRequestId;
+      if (uploadedLogoUrl) URL.revokeObjectURL(uploadedLogoUrl);
+      uploadedLogoUrl = null;
+      uploadedLogoImg = null;
+      isLogoLoading = false;
+      logoError = "";
+      if (clearInput) elLogoUpload.value = "";
+      elLogoUploadStatus.textContent = "PNG·JPG·WEBP, 최대 20MB. 투명 배경 PNG를 권장해.";
+      updateDownloadButton();
+    }
+
+    function handleLogoUpload() {
+      const file = elLogoUpload.files?.[0];
+      if (!file) return;
+      clearUploadedLogo(false);
+      if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 20 * 1024 * 1024) {
+        logoError = "로고는 20MB 이하 PNG·JPG·WEBP 파일을 선택해줘.";
+        elLogoUploadStatus.textContent = logoError;
+        scheduleDraw();
+        return;
+      }
+      const requestId = logoLoadRequestId;
+      const url = URL.createObjectURL(file);
+      uploadedLogoUrl = url;
+      isLogoLoading = true;
+      elLogoUploadStatus.textContent = "로고 불러오는 중…";
+      updateDownloadButton();
+      const img = new Image();
+      img.onload = () => {
+        if (requestId !== logoLoadRequestId) return;
+        uploadedLogoImg = img;
+        isLogoLoading = false;
+        elLogoUploadStatus.textContent = `로고 준비 완료 · ${img.naturalWidth} × ${img.naturalHeight}px`;
+        updateDownloadButton();
+        scheduleDraw();
+      };
+      img.onerror = () => {
+        if (requestId !== logoLoadRequestId) return;
+        clearUploadedLogo();
+        logoError = "로고를 불러오지 못했어. 다른 이미지 파일을 선택해줘.";
+        elLogoUploadStatus.textContent = logoError;
+        scheduleDraw();
+      };
+      img.src = url;
+      scheduleDraw();
     }
 
     function drawRightImage(layout) {
@@ -1487,6 +1626,10 @@
 
       if (templateError) {
         errors.push({ field: elTemplateOptions.querySelector("input:checked"), message: templateError });
+      }
+
+      if (elLogoType.value === "custom" && !uploadedLogoImg) {
+        errors.push({ field: elLogoUpload, message: logoError || "직접 넣을 로고 파일을 선택해줘." });
       }
 
       if (!elName.value.trim()) {
@@ -1541,6 +1684,29 @@
     function drawCard() {
       if (!appReady || isTemplateLoading || templateError || !templateImg?.naturalWidth) return;
 
+      lastOverflowFields = renderCard(canvas);
+      syncMobilePreview();
+      renderEditorMessages();
+    }
+
+    // Preview and export share coordinates and layout. Text and source images
+    // are drawn at the target resolution instead of enlarging a preview bitmap.
+    function renderCard(targetCanvas) {
+      const previousCtx = ctx;
+      ctx = targetCanvas.getContext("2d");
+      ctx.save();
+      try {
+        ctx.setTransform(targetCanvas.width / canvas.width, 0, 0, targetCanvas.height / canvas.height, 0, 0);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        return drawCardContent();
+      } finally {
+        ctx.restore();
+        ctx = previousCtx;
+      }
+    }
+
+    function drawCardContent() {
       const layout = getTemplate().layout;
       const hasWork = elWork.value.trim().length > 0;
       const teamConfig = hasWork ? layout.teamWithWork : layout.teamWithoutWork;
@@ -1610,11 +1776,9 @@
       ));
 
       drawRightImage(layout);
-      lastOverflowFields = textResults
+      return textResults
         .filter(result => result?.overflow)
         .map(result => result.fieldKey);
-      syncMobilePreview();
-      renderEditorMessages();
     }
 
     function refreshCharacterOptions(keepFile = null) {
@@ -1758,6 +1922,9 @@
     }
 
     function updateRangeLabels() {
+      document.getElementById("logoOffsetXValue").textContent = elLogoOffsetX.value;
+      document.getElementById("logoOffsetYValue").textContent = elLogoOffsetY.value;
+      document.getElementById("logoScaleValue").textContent = elLogoScale.value;
       elNameOffsetXValue.textContent = elNameOffsetX.value;
       elNameOffsetYValue.textContent = elNameOffsetY.value;
       elNameScaleValue.textContent = elNameScale.value;
@@ -1823,7 +1990,7 @@
     }
 
     async function downloadPNG() {
-      if (isDownloading || !appReady || isTemplateLoading || templateError) return;
+      if (isDownloading || !appReady || isTemplateLoading || templateError || (elLogoType.value === "custom" && isLogoLoading)) return;
 
       flushScheduledDraw();
 
@@ -1850,10 +2017,7 @@
         outputCanvas.width = exportWidth;
         outputCanvas.height = exportHeight;
 
-        const outputCtx = outputCanvas.getContext("2d");
-        outputCtx.imageSmoothingEnabled = true;
-        outputCtx.imageSmoothingQuality = "high";
-        outputCtx.drawImage(canvas, 0, 0, exportWidth, exportHeight);
+        renderCard(outputCanvas);
 
         const blob = await canvasToBlob(outputCanvas);
         const objectUrl = URL.createObjectURL(blob);
@@ -1882,6 +2046,11 @@
       return JSON.stringify({
         templateId: selectedTemplateId,
         logoType: elLogoType.value,
+        logoOffsetX: elLogoOffsetX.value,
+        logoOffsetY: elLogoOffsetY.value,
+        logoScale: elLogoScale.value,
+        logoColor: elLogoColor.value,
+        hasLogo: Boolean(uploadedLogoUrl),
         name: elName.value,
         title: elTitle.value,
         team: elTeam.value,
@@ -1927,6 +2096,12 @@
     function resetDefaults() {
       selectTemplate("default");
       elLogoType.value = "erica";
+      clearUploadedLogo();
+      elLogoOffsetX.value = 0;
+      elLogoOffsetY.value = 0;
+      elLogoScale.value = 100;
+      elLogoColor.value = "auto";
+      updateLogoUI();
 
       elName.value = "하냥이";
       elTitle.value = "귀여움";
@@ -1978,7 +2153,16 @@
         element.addEventListener("change", scheduleDraw);
       });
 
-      elLogoType.addEventListener("change", scheduleDraw);
+      elLogoType.addEventListener("change", updateLogoUI);
+      elLogoUpload.addEventListener("change", handleLogoUpload);
+      elLogoColor.addEventListener("change", scheduleDraw);
+      document.getElementById("resetLogoPlacement").addEventListener("click", () => {
+        elLogoOffsetX.value = 0;
+        elLogoOffsetY.value = 0;
+        elLogoScale.value = 100;
+        updateRangeLabels();
+        scheduleDraw();
+      });
       elImageMode.addEventListener("change", updateImageModeUI);
 
       elCategory.addEventListener("change", () => {
@@ -1995,6 +2179,9 @@
       elPhotoShape.addEventListener("change", scheduleDraw);
 
       [
+        elLogoOffsetX,
+        elLogoOffsetY,
+        elLogoScale,
         elNameOffsetX,
         elNameOffsetY,
         elNameScale,
@@ -2028,6 +2215,7 @@
       window.addEventListener("resize", scheduleDraw);
 
       window.addEventListener("beforeunload", () => {
+        if (uploadedLogoUrl) URL.revokeObjectURL(uploadedLogoUrl);
         if (uploadedPhotoUrl) {
           URL.revokeObjectURL(uploadedPhotoUrl);
         }

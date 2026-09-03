@@ -1,4 +1,4 @@
-// Based on MAIL_CARD_TEMPLATE_CONCEPTS_V1; curated to three designs.
+// ZIP concepts plus four user-supplied reference designs; seven curated options.
 // Text coordinates remain the base anchors; titles follow the rendered name.
 const APP_VERSION = "V7.1.0 · TEMPLATE COLLECTION";
 const CARD_TEMPLATES = {
@@ -67,6 +67,96 @@ const CARD_TEMPLATES = {
       addressWithWork: {"x":102,"y":627,"maxWidth":1800,"startSize":30,"minSize":18,"color":"#FFFFFF"},
       addressWithoutWork: {"x":102,"y":627,"maxWidth":1800,"startSize":30,"minSize":18,"color":"#FFFFFF"},
       characterBox: {"x":1602,"y":150,"w":340,"h":350},
+      nameTitleGap: 24,
+    }
+  },
+  diagonal_signature: {
+    id: "diagonal_signature",
+    name: "네이비 사선 시그니처",
+    description: "사선 코너와 넓은 로고 영역을 갖춘 화이트 명함",
+    background: "assets/templates/diagonal_signature.png",
+    thumbnail: "assets/templates/thumbnails/diagonal_signature.webp",
+    layout: {
+      logos: {"erica":{"x":180,"y":205,"w":400,"h":100,"src":"assets/logos/hyu_erica.png"},"hanyang":{"x":200,"y":205,"w":360,"h":100,"src":"assets/logos/hyu.png"}},
+      name: {"x":815,"y":95,"maxWidth":685,"startSize":90,"minSize":40,"color":"#0b315d"},
+      title: {"x":1540,"y":175,"maxWidth":270,"startSize":42,"minSize":24,"color":"#666e77"},
+      teamWithWork: {"x":815,"y":244,"maxWidth":1090,"startSize":36,"minSize":21,"color":"#283847"},
+      teamWithoutWork: {"x":815,"y":244,"maxWidth":1090,"startSize":40,"minSize":23,"color":"#283847"},
+      work: {"x":815,"y":343,"maxWidth":1090,"startSize":30,"minSize":18,"color":"#697582"},
+      et: {"x":815,"emailY":408,"phoneY":475,"size":34,"color":"#0b315d"},
+      email: {"x":875,"y":408,"maxWidth":1010,"startSize":36,"minSize":22,"color":"#283847"},
+      phone: {"x":875,"y":475,"maxWidth":1010,"startSize":36,"minSize":22,"color":"#283847"},
+      addressWithWork: {"x":815,"y":535,"maxWidth":1110,"startSize":27,"minSize":17,"color":"#283847"},
+      addressWithoutWork: {"x":815,"y":535,"maxWidth":1110,"startSize":27,"minSize":17,"color":"#283847"},
+      characterBox: {"x":245,"y":337,"w":240,"h":210},
+      nameTitleGap: 24,
+    }
+  },
+  navy_gold_frame: {
+    id: "navy_gold_frame",
+    name: "네이비 골드 프레임",
+    description: "네이비 블록과 가는 골드 라인으로 정리한 여백 중심 명함",
+    background: "assets/templates/navy_gold_frame.png",
+    thumbnail: "assets/templates/thumbnails/navy_gold_frame.webp",
+    layout: {
+      logos: {"erica":{"x":310,"y":170,"w":370,"h":100,"src":"assets/logos/hyu_erica.png"},"hanyang":{"x":330,"y":170,"w":330,"h":100,"src":"assets/logos/hyu.png"}},
+      name: {"x":835,"y":95,"maxWidth":690,"startSize":88,"minSize":38,"color":"#0b315d"},
+      title: {"x":1530,"y":175,"maxWidth":280,"startSize":42,"minSize":24,"color":"#88774f"},
+      teamWithWork: {"x":835,"y":244,"maxWidth":1090,"startSize":35,"minSize":21,"color":"#283847"},
+      teamWithoutWork: {"x":835,"y":244,"maxWidth":1090,"startSize":39,"minSize":22,"color":"#283847"},
+      work: {"x":835,"y":337,"maxWidth":1090,"startSize":29,"minSize":18,"color":"#68717b"},
+      et: {"x":835,"emailY":398,"phoneY":459,"size":33,"color":"#88774f"},
+      email: {"x":895,"y":398,"maxWidth":800,"startSize":35,"minSize":22,"color":"#283847"},
+      phone: {"x":895,"y":459,"maxWidth":800,"startSize":35,"minSize":22,"color":"#283847"},
+      addressWithWork: {"x":835,"y":520,"maxWidth":1120,"startSize":27,"minSize":17,"color":"#283847"},
+      addressWithoutWork: {"x":835,"y":520,"maxWidth":1120,"startSize":27,"minSize":17,"color":"#283847"},
+      characterBox: {"x":365,"y":305,"w":260,"h":230},
+      nameTitleGap: 24,
+    }
+  },
+  portrait_panel: {
+    id: "portrait_panel",
+    name: "실버 프로필 패널",
+    description: "큰 원형 이미지 영역과 소속·연락처를 분리한 프로필 명함",
+    background: "assets/templates/portrait_panel.png",
+    thumbnail: "assets/templates/thumbnails/portrait_panel.webp",
+    layout: {
+      logos: {"erica":{"x":145,"y":575,"w":430,"h":80,"src":"assets/logos/hyu_erica.png"},"hanyang":{"x":165,"y":575,"w":390,"h":80,"src":"assets/logos/hyu.png"}},
+      name: {"x":810,"y":110,"maxWidth":690,"startSize":94,"minSize":40,"color":"#0b315d"},
+      title: {"x":1530,"y":181,"maxWidth":310,"startSize":43,"minSize":24,"color":"#737b83"},
+      teamWithWork: {"x":810,"y":277,"maxWidth":1130,"startSize":39,"minSize":22,"color":"#283847"},
+      teamWithoutWork: {"x":810,"y":297,"maxWidth":1130,"startSize":42,"minSize":24,"color":"#283847"},
+      work: {"x":810,"y":340,"maxWidth":1130,"startSize":30,"minSize":18,"color":"#68717b"},
+      et: {"x":810,"emailY":423,"phoneY":488,"size":36,"color":"#0b315d"},
+      email: {"x":875,"y":423,"maxWidth":1060,"startSize":38,"minSize":23,"color":"#283847"},
+      phone: {"x":875,"y":488,"maxWidth":1060,"startSize":38,"minSize":23,"color":"#283847"},
+      addressWithWork: {"x":810,"y":551,"maxWidth":1150,"startSize":30,"minSize":18,"color":"#283847"},
+      addressWithoutWork: {"x":810,"y":551,"maxWidth":1150,"startSize":30,"minSize":18,"color":"#283847"},
+      characterBox: {"x":178,"y":141,"w":345,"h":345},
+      nameTitleGap: 24,
+    }
+  },
+  midnight_flow: {
+    id: "midnight_flow",
+    name: "미드나이트 플로우",
+    description: "딥 네이비와 푸른 곡선이 이어지는 테크 명함",
+    background: "assets/templates/midnight_flow.png",
+    thumbnail: "assets/templates/thumbnails/midnight_flow.webp",
+    layout: {
+      logos: {"erica":{"x":1565,"y":80,"w":400,"h":78,"src":"assets/logos/hyu_erica.png"},"hanyang":{"x":1585,"y":80,"w":360,"h":78,"src":"assets/logos/hyu.png"}},
+      logoTint: "#b9e0ff",
+      name: {"x":128,"y":210,"maxWidth":310,"startSize":112,"minSize":36,"color":"#ffffff"},
+      title: {"x":128,"y":355,"maxWidth":325,"startSize":44,"minSize":25,"color":"#8ac4ee"},
+      nameTitlePlacement: "below",
+      teamWithWork: {"x":595,"y":190,"maxWidth":1320,"startSize":41,"minSize":23,"color":"#ffffff"},
+      teamWithoutWork: {"x":595,"y":208,"maxWidth":1320,"startSize":43,"minSize":24,"color":"#ffffff"},
+      work: {"x":595,"y":265,"maxWidth":1300,"startSize":32,"minSize":19,"color":"#8ac4ee"},
+      et: {"x":595,"emailY":364,"phoneY":445,"size":37,"color":"#6eb9ed"},
+      email: {"x":660,"y":364,"maxWidth":890,"startSize":39,"minSize":24,"color":"#ffffff"},
+      phone: {"x":660,"y":445,"maxWidth":890,"startSize":39,"minSize":24,"color":"#ffffff"},
+      addressWithWork: {"x":595,"y":535,"maxWidth":955,"startSize":30,"minSize":18,"color":"#b9d5ea"},
+      addressWithoutWork: {"x":595,"y":535,"maxWidth":955,"startSize":30,"minSize":18,"color":"#b9d5ea"},
+      characterBox: {"x":1720,"y":315,"w":245,"h":245},
       nameTitleGap: 24,
     }
   },
