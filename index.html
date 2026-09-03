@@ -605,7 +605,7 @@
       <fieldset class="template-picker" aria-describedby="templateStatus">
         <legend>명함 디자인</legend>
         <div class="template-options" id="templateOptions"></div>
-        <div class="help" id="templateStatus" role="status" aria-live="polite">기본형 · 총 6종</div>
+        <div class="help" id="templateStatus" role="status" aria-live="polite">기본형 · 총 3종</div>
       </fieldset>
 
       <div class="field">
@@ -1177,10 +1177,6 @@
     }
 
     function drawTextOneLine(text, opt, weight, fieldKey) {
-      const rightEdge = getTemplate().textRightEdges?.[fieldKey];
-      if (rightEdge !== undefined) {
-        opt = { ...opt, maxWidth: Math.max(1, Math.min(opt.maxWidth, rightEdge - opt.x)) };
-      }
       const finalText = (text || " ").trim() || " ";
       const size = fitFontSize(finalText, opt.maxWidth, opt.startSize, opt.minSize, weight);
       setFont(weight, size);
@@ -1198,9 +1194,15 @@
       }
 
       ctx.fillText(displayText, opt.x, opt.y);
+      const bounds = ctx.measureText(displayText);
       ctx.restore();
 
-      return { fieldKey, overflow };
+      return {
+        fieldKey,
+        overflow,
+        right: opt.x + bounds.actualBoundingBoxRight,
+        bottom: opt.y + bounds.actualBoundingBoxDescent
+      };
     }
 
     function drawNameText(text, opt) {
@@ -1224,10 +1226,15 @@
         startSize -= 12;
       }
 
-      // The supplied name/title boxes overlap horizontally in the new designs.
-      // Keep their source coordinates, but reserve space for a visible title.
-      if (selectedTemplateId !== "default" && elTitle.value.trim()) {
-        maxWidth = Math.max(1, Math.min(maxWidth, getTemplate().layout.title.x - opt.x - offsetX - 16));
+      // Reserve room within the name/title row, then attach the title to the
+      // actual rendered name width instead of leaving a fixed empty gap.
+      if (elTitle.value.trim()) {
+        const layout = getTemplate().layout;
+        const titleWeight = getWeight(elBoldTitle.checked, 700, 400);
+        setFont(titleWeight, layout.title.startSize);
+        const titleWidth = Math.min(layout.title.maxWidth, ctx.measureText(elTitle.value.trim()).width);
+        const rowRight = layout.title.x + layout.title.maxWidth;
+        maxWidth = Math.max(1, Math.min(maxWidth, rowRight - opt.x - offsetX - titleWidth - layout.nameTitleGap));
       }
 
       return drawTextOneLine(finalText, {
@@ -1238,6 +1245,20 @@
         minSize: Math.max(18, Math.round(minSize * scale)),
         maxWidth
       }, weight, "name");
+    }
+
+    function drawTitleBesideName(nameResult, layout) {
+      const text = elTitle.value.trim();
+      const weight = getWeight(elBoldTitle.checked, 700, 400);
+      const x = nameResult.right + layout.nameTitleGap;
+      const maxWidth = Math.max(1, Math.min(layout.title.maxWidth, layout.title.x + layout.title.maxWidth - x));
+      const size = fitFontSize(text, maxWidth, layout.title.startSize, layout.title.minSize, weight);
+      setFont(weight, size);
+      ctx.textBaseline = "top";
+      const displayText = ctx.measureText(text).width > maxWidth ? ellipsizeText(text, maxWidth) : text;
+      const y = nameResult.bottom - ctx.measureText(displayText).actualBoundingBoxDescent;
+
+      return drawTextOneLine(text, { ...layout.title, x, y, maxWidth }, weight, "title");
     }
 
     function drawET(opt) {
@@ -1545,14 +1566,9 @@
       ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
       drawLogo(layout);
-      textResults.push(drawNameText(elName.value, layout.name));
-
-      textResults.push(drawTextOneLine(
-        elTitle.value,
-        layout.title,
-        getWeight(elBoldTitle.checked, 700, 400),
-        "title"
-      ));
+      const nameResult = drawNameText(elName.value, layout.name);
+      textResults.push(nameResult);
+      textResults.push(drawTitleBesideName(nameResult, layout));
 
       textResults.push(drawTextOneLine(
         elTeam.value,
