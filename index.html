@@ -33,13 +33,14 @@
       margin: 24px auto;
       padding: 0 20px;
       display: grid;
-      grid-template-columns: 410px 1fr;
+      grid-template-columns: 410px minmax(0, 1fr);
       gap: 24px;
       align-items: start;
     }
 
     .panel,
     .preview {
+      min-width: 0;
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 8px 24px rgba(0,0,0,.08);
@@ -63,6 +64,7 @@
 
     .editor-heading {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
@@ -83,6 +85,83 @@
 
     .field {
       margin-bottom: 14px;
+    }
+
+    .template-picker {
+      min-width: 0;
+      margin: 0 0 14px;
+      padding: 0;
+      border: 0;
+    }
+
+    .template-picker legend {
+      margin-bottom: 8px;
+      padding: 0;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .template-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .template-option {
+      position: relative;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .template-option input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .template-card {
+      display: flex;
+      height: 100%;
+      min-height: 80px;
+      flex-direction: column;
+      gap: 6px;
+      padding: 5px;
+      border: 2px solid #d0d7de;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .template-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 2048 / 706;
+      border-radius: 4px;
+    }
+
+    .template-card-name {
+      margin: auto 0;
+      font-size: 11px;
+      line-height: 1.35;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .template-option input:checked + .template-card {
+      border-color: #0f4c81;
+      background: #eef5fb;
+      box-shadow: 0 0 0 1px #0f4c81;
+    }
+
+    .template-option input:checked + .template-card .template-card-name {
+      color: #0f4c81;
+      font-weight: 800;
+    }
+
+    .template-option input:focus-visible + .template-card {
+      outline: 3px solid #5b9bd5;
+      outline-offset: 2px;
     }
 
     .field label {
@@ -335,6 +414,17 @@
       margin-bottom: 16px;
     }
 
+    details.section-box > summary {
+      min-height: 44px;
+      padding: 11px 0;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    details.section-box { padding-top: 2px; padding-bottom: 2px; }
+    details.section-box[open] { padding-bottom: 14px; }
+
     .section-title {
       margin: 0 0 12px;
       font-size: 15px;
@@ -504,7 +594,7 @@
     <div class="panel">
       <div class="editor-heading">
         <h1>메일 명함 생성기</h1>
-        <span class="version-badge">V7.0.0 · FAST EDITOR</span>
+        <span class="version-badge">V7.1.0 · TEMPLATE COLLECTION</span>
       </div>
 
       <div class="mobile-preview" id="mobilePreview">
@@ -523,14 +613,43 @@
         </div>
       </div>
 
+      <fieldset class="template-picker" aria-describedby="templateStatus">
+        <legend>명함 디자인</legend>
+        <div class="template-options" id="templateOptions"></div>
+        <div class="help" id="templateStatus" role="status" aria-live="polite">기본형 · 총 7종</div>
+      </fieldset>
+
       <div class="field">
-        <label for="logoType">상단 로고</label>
+        <label for="logoType">로고</label>
         <select id="logoType">
           <option value="erica">한양대학교 ERICA</option>
           <option value="hanyang">한양대</option>
+          <option value="custom">직접 올린 로고</option>
           <option value="none">로고 없음</option>
         </select>
       </div>
+
+      <div id="customLogoControls" class="field hidden">
+        <label for="logoUpload">로고 파일 선택</label>
+        <input id="logoUpload" type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" aria-describedby="logoUploadStatus" />
+        <div class="help" id="logoUploadStatus" role="status" aria-live="polite">PNG·JPG·WEBP, 최대 20MB. 투명 배경 PNG를 권장해.</div>
+        <div class="privacy-note">로고 파일은 현재 브라우저에서만 처리하며 서버에 업로드하지 않아.</div>
+      </div>
+
+      <details class="section-box" id="logoAdjustments">
+        <summary>로고 위치·크기·색상 조절</summary>
+        <div class="range-field">
+          <div class="range-row"><span>좌우</span><input id="logoOffsetX" type="range" min="-2000" max="2000" value="0" aria-label="로고 좌우 위치" /><span id="logoOffsetXValue">0</span></div>
+          <div class="range-row"><span>상하</span><input id="logoOffsetY" type="range" min="-650" max="650" value="0" aria-label="로고 상하 위치" /><span id="logoOffsetYValue">0</span></div>
+          <div class="range-row"><span>크기</span><input id="logoScale" type="range" min="25" max="250" value="100" aria-label="로고 크기" /><span id="logoScaleValue">100</span></div>
+        </div>
+        <div class="field">
+          <label for="logoColor">로고 색상</label>
+          <select id="logoColor"><option value="auto">자동 (직접 올린 로고는 원본)</option><option value="original">원본 색상</option><option value="white">흰색</option></select>
+          <div class="help">투명 로고는 어두운 배경에서 흰색으로 바꿀 수 있어.</div>
+        </div>
+        <button id="resetLogoPlacement" class="btn-secondary" type="button">로고 배치 초기화</button>
+      </details>
 
       <div class="field">
         <label for="name">이름 <span class="required-note">(필수)</span></label>
@@ -573,7 +692,7 @@
       <div class="field">
         <label for="exportWidth">다운로드 가로폭(px)</label>
         <input id="exportWidth" type="number" min="100" max="5000" value="750" />
-        <div class="help">기본값 750px. 메일에 작게 넣을 땐 500px, 크게 필요하면 1000px 이상 입력.</div>
+        <div class="help">기본값 750px, 최대 5000px. 선택한 해상도에서 글자와 로고를 직접 그려 저장해. 원본 이미지가 클수록 더 선명해.</div>
       </div>
 
       <div class="check-group">
@@ -590,7 +709,7 @@
 
       <div class="mode-box">
         <div class="field">
-          <label for="imageMode">오른쪽 이미지 유형</label>
+          <label for="imageMode">명함 이미지</label>
           <select id="imageMode">
             <option value="character">캐릭터 사용</option>
             <option value="photo">내 사진 사용</option>
@@ -723,7 +842,7 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn-primary" id="downloadBtn" type="button">PNG 다운로드</button>
+        <button class="btn-primary" id="downloadBtn" type="button" disabled>PNG 다운로드</button>
         <button class="btn-secondary" id="resetBtn" type="button">기본값 복원</button>
       </div>
 
@@ -767,36 +886,9 @@
     </div>
   </dialog>
 
+  <script src="card-templates.js"></script>
   <script>
     const FONT_FAMILY = '"Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif';
-
-    const CONFIG = {
-      width: 2048,
-      height: 706,
-
-      logos: {
-        erica: { src: "assets/logos/hyu_erica.png", x: 1642, y: 54, w: 340, h: 70 },
-        hanyang: { src: "assets/logos/hyu.png", x: 1666, y: 56, w: 300, h: 72 }
-      },
-
-      name: { x: 120, y: 142, maxWidth: 610, startSize: 142, minSize: 56, color: "#0f4c81" },
-      title: { x: 725, y: 236, maxWidth: 240, startSize: 68, minSize: 34, color: "#333333" },
-
-      teamWithWork: { x: 118, y: 356, maxWidth: 790, startSize: 42, minSize: 22, color: "#333333" },
-      teamWithoutWork: { x: 118, y: 376, maxWidth: 790, startSize: 46, minSize: 24, color: "#333333" },
-
-      work: { x: 118, y: 414, maxWidth: 860, startSize: 30, minSize: 16, color: "#555555" },
-
-      et: { x: 1005, emailY: 316, phoneY: 396, size: 44, color: "#333333" },
-
-      email: { x: 1074, y: 316, maxWidth: 460, startSize: 42, minSize: 28, color: "#333333" },
-      phone: { x: 1074, y: 396, maxWidth: 460, startSize: 42, minSize: 22, color: "#333333" },
-
-      addressWithWork: { x: 118, y: 522, maxWidth: 1370, startSize: 40, minSize: 22, color: "#333333" },
-      addressWithoutWork: { x: 118, y: 505, maxWidth: 1370, startSize: 40, minSize: 22, color: "#333333" },
-
-      characterBox: { x: 1570, y: 150, w: 360, h: 430 }
-    };
 
     function makeCharacters() {
       const list = [];
@@ -857,11 +949,19 @@
     const characters = makeCharacters();
 
     const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
+    let ctx = canvas.getContext("2d");
     const mobileCanvas = document.getElementById("mobileCanvas");
     const mobileCtx = mobileCanvas.getContext("2d");
 
+    const elTemplateOptions = document.getElementById("templateOptions");
+    const elTemplateStatus = document.getElementById("templateStatus");
     const elLogoType = document.getElementById("logoType");
+    const elLogoUpload = document.getElementById("logoUpload");
+    const elLogoUploadStatus = document.getElementById("logoUploadStatus");
+    const elLogoOffsetX = document.getElementById("logoOffsetX");
+    const elLogoOffsetY = document.getElementById("logoOffsetY");
+    const elLogoScale = document.getElementById("logoScale");
+    const elLogoColor = document.getElementById("logoColor");
     const elName = document.getElementById("name");
     const elTitle = document.getElementById("title");
     const elTeam = document.getElementById("team");
@@ -920,10 +1020,20 @@
     const elPhotoOffsetYValue = document.getElementById("photoOffsetYValue");
     const elPhotoScaleValue = document.getElementById("photoScaleValue");
 
-    const templateImg = new Image();
+    let selectedTemplateId = "default";
+    let templateImg = null;
+    let templateLoadRequestId = 0;
+    let isTemplateLoading = true;
+    let templateError = "";
+    let appReady = false;
     let selectedCharImg = new Image();
     let uploadedPhotoImg = null;
     let uploadedPhotoUrl = null;
+    let uploadedLogoImg = null;
+    let uploadedLogoUrl = null;
+    let logoLoadRequestId = 0;
+    let isLogoLoading = false;
+    let logoError = "";
     let filteredCharacters = [];
     let characterLoadRequestId = 0;
     let drawFrameId = null;
@@ -933,6 +1043,7 @@
     const logoImages = {};
     const imageCache = new Map();
     const trimRectCache = new WeakMap();
+    const tintedLogoCache = new WeakMap();
 
     const FIELD_LABELS = {
       name: "이름",
@@ -943,6 +1054,87 @@
       phone: "전화번호",
       address: "주소"
     };
+
+    function getTemplate() {
+      return CARD_TEMPLATES[selectedTemplateId];
+    }
+
+    function renderTemplateOptions() {
+      Object.values(CARD_TEMPLATES).forEach(template => {
+        const label = document.createElement("label");
+        label.className = "template-option";
+        label.title = template.description;
+
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "cardTemplate";
+        input.value = template.id;
+        input.checked = template.id === selectedTemplateId;
+
+        const card = document.createElement("span");
+        card.className = "template-card";
+        const thumbnail = document.createElement("img");
+        thumbnail.src = template.thumbnail;
+        thumbnail.alt = "";
+        thumbnail.width = 360;
+        thumbnail.height = 124;
+        thumbnail.decoding = "async";
+        const name = document.createElement("span");
+        name.className = "template-card-name";
+        name.textContent = template.name;
+        card.append(thumbnail, name);
+        label.append(input, card);
+        elTemplateOptions.appendChild(label);
+
+        input.addEventListener("change", () => selectTemplate(template.id));
+        // A failed load can be retried by selecting the same radio again.
+        input.addEventListener("click", () => {
+          if (templateError && selectedTemplateId === template.id) selectTemplate(template.id);
+        });
+      });
+    }
+
+    function updateDownloadButton() {
+      elDownloadBtn.disabled = isDownloading || !appReady || isTemplateLoading || Boolean(templateError) ||
+        (elLogoType.value === "custom" && isLogoLoading);
+    }
+
+    async function selectTemplate(id) {
+      if (!Object.hasOwn(CARD_TEMPLATES, id)) return;
+
+      const requestId = ++templateLoadRequestId;
+      selectedTemplateId = id;
+      isTemplateLoading = true;
+      templateError = "";
+      lastOverflowFields = [];
+      elTemplateOptions.querySelectorAll("input").forEach(input => {
+        input.checked = input.value === id;
+      });
+      elTemplateStatus.textContent = `${getTemplate().name} 불러오는 중…`;
+      elTemplateOptions.setAttribute("aria-busy", "true");
+      updateDownloadButton();
+      renderEditorMessages();
+
+      try {
+        const image = await loadImage(getTemplate().background);
+        if (requestId !== templateLoadRequestId) return;
+
+        templateImg = image;
+        elTemplateStatus.textContent = `${getTemplate().name} · 총 ${Object.keys(CARD_TEMPLATES).length}종`;
+      } catch (err) {
+        if (requestId !== templateLoadRequestId) return;
+        templateError = "디자인을 불러오지 못했어. 해당 디자인을 다시 선택해줘.";
+        elTemplateStatus.textContent = templateError;
+      } finally {
+        if (requestId === templateLoadRequestId) {
+          isTemplateLoading = false;
+          elTemplateOptions.removeAttribute("aria-busy");
+          updateDownloadButton();
+          renderEditorMessages();
+          scheduleDraw();
+        }
+      }
+    }
 
     function getWeight(checked, bold = 700, normal = 400) {
       return checked ? bold : normal;
@@ -1049,9 +1241,15 @@
       }
 
       ctx.fillText(displayText, opt.x, opt.y);
+      const bounds = ctx.measureText(displayText);
       ctx.restore();
 
-      return { fieldKey, overflow };
+      return {
+        fieldKey,
+        overflow,
+        right: opt.x + bounds.actualBoundingBoxRight,
+        bottom: opt.y + bounds.actualBoundingBoxDescent
+      };
     }
 
     function drawNameText(text, opt) {
@@ -1075,6 +1273,17 @@
         startSize -= 12;
       }
 
+      // Reserve room within the name/title row, then attach the title to the
+      // actual rendered name width instead of leaving a fixed empty gap.
+      if (elTitle.value.trim() && getTemplate().layout.nameTitlePlacement !== "below") {
+        const layout = getTemplate().layout;
+        const titleWeight = getWeight(elBoldTitle.checked, 700, 400);
+        setFont(titleWeight, layout.title.startSize);
+        const titleWidth = Math.min(layout.title.maxWidth, ctx.measureText(elTitle.value.trim()).width);
+        const rowRight = layout.title.x + layout.title.maxWidth;
+        maxWidth = Math.max(1, Math.min(maxWidth, rowRight - opt.x - offsetX - titleWidth - layout.nameTitleGap));
+      }
+
       return drawTextOneLine(finalText, {
         ...opt,
         x: opt.x + offsetX,
@@ -1085,14 +1294,36 @@
       }, weight, "name");
     }
 
-    function drawET() {
+    function drawTitleBesideName(nameResult, layout) {
+      const text = elTitle.value.trim();
+      const weight = getWeight(elBoldTitle.checked, 700, 400);
+      if (layout.nameTitlePlacement === "below") {
+        const size = fitFontSize(text, layout.title.maxWidth, layout.title.startSize, layout.title.minSize, weight);
+        setFont(weight, size);
+        ctx.textBaseline = "top";
+        const displayText = ctx.measureText(text).width > layout.title.maxWidth ? ellipsizeText(text, layout.title.maxWidth) : text;
+        const y = nameResult.bottom + layout.nameTitleGap + ctx.measureText(displayText).actualBoundingBoxAscent;
+        return drawTextOneLine(text, { ...layout.title, x: layout.name.x + Number(elNameOffsetX.value), y }, weight, "title");
+      }
+      const x = nameResult.right + layout.nameTitleGap;
+      const maxWidth = Math.max(1, Math.min(layout.title.maxWidth, layout.title.x + layout.title.maxWidth - x));
+      const size = fitFontSize(text, maxWidth, layout.title.startSize, layout.title.minSize, weight);
+      setFont(weight, size);
+      ctx.textBaseline = "top";
+      const displayText = ctx.measureText(text).width > maxWidth ? ellipsizeText(text, maxWidth) : text;
+      const y = nameResult.bottom - ctx.measureText(displayText).actualBoundingBoxDescent;
+
+      return drawTextOneLine(text, { ...layout.title, x, y, maxWidth }, weight, "title");
+    }
+
+    function drawET(opt) {
       const weight = getWeight(elBoldContact.checked, 700, 400);
 
-      ctx.fillStyle = CONFIG.et.color;
+      ctx.fillStyle = opt.color;
       ctx.textBaseline = "top";
-      setFont(weight, CONFIG.et.size);
-      ctx.fillText("E", CONFIG.et.x, CONFIG.et.emailY);
-      ctx.fillText("T", CONFIG.et.x, CONFIG.et.phoneY);
+      setFont(weight, opt.size);
+      ctx.fillText("E", opt.x, opt.emailY);
+      ctx.fillText("T", opt.x, opt.phoneY);
     }
 
     function getTrimRect(img, trimWhite = true) {
@@ -1270,31 +1501,115 @@
       ctx.restore();
     }
 
-    function drawLogo() {
+    function drawLogo(layout) {
       const type = elLogoType.value;
 
       if (type === "none") return;
 
-      const img = logoImages[type];
-      const box = CONFIG.logos[type];
+      let img = type === "custom" ? uploadedLogoImg : logoImages[type];
+      const baseBox = layout.logos[type] || layout.logos.erica;
 
-      if (!img || !box) return;
+      if (!img || !baseBox) return;
+
+      const color = elLogoColor.value === "white" ? "#ffffff"
+        : elLogoColor.value === "auto" && type !== "custom" ? layout.logoTint : null;
+      if (color) {
+        let variants = tintedLogoCache.get(img);
+        if (!variants) {
+          variants = new Map();
+          tintedLogoCache.set(img, variants);
+        }
+        if (!variants.has(color)) {
+          const tinted = document.createElement("canvas");
+          tinted.width = img.naturalWidth;
+          tinted.height = img.naturalHeight;
+          const tintCtx = tinted.getContext("2d");
+          tintCtx.drawImage(img, 0, 0);
+          tintCtx.globalCompositeOperation = "source-in";
+          tintCtx.fillStyle = color;
+          tintCtx.fillRect(0, 0, tinted.width, tinted.height);
+          variants.set(color, tinted);
+        }
+        img = variants.get(color);
+      }
+
+      const scale = Number(elLogoScale.value) / 100;
+      const w = baseBox.w * scale;
+      const h = baseBox.h * scale;
+      const box = {
+        x: baseBox.x + (baseBox.w - w) / 2 + Number(elLogoOffsetX.value),
+        y: baseBox.y + (baseBox.h - h) / 2 + Number(elLogoOffsetY.value), w, h
+      };
 
       drawTrimmedInBox(img, box, false);
     }
 
-    function drawRightImage() {
+    function updateLogoUI() {
+      document.getElementById("customLogoControls").classList.toggle("hidden", elLogoType.value !== "custom");
+      updateDownloadButton();
+      scheduleDraw();
+    }
+
+    function clearUploadedLogo(clearInput = true) {
+      ++logoLoadRequestId;
+      if (uploadedLogoUrl) URL.revokeObjectURL(uploadedLogoUrl);
+      uploadedLogoUrl = null;
+      uploadedLogoImg = null;
+      isLogoLoading = false;
+      logoError = "";
+      if (clearInput) elLogoUpload.value = "";
+      elLogoUploadStatus.textContent = "PNG·JPG·WEBP, 최대 20MB. 투명 배경 PNG를 권장해.";
+      updateDownloadButton();
+    }
+
+    function handleLogoUpload() {
+      const file = elLogoUpload.files?.[0];
+      if (!file) return;
+      clearUploadedLogo(false);
+      if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 20 * 1024 * 1024) {
+        logoError = "로고는 20MB 이하 PNG·JPG·WEBP 파일을 선택해줘.";
+        elLogoUploadStatus.textContent = logoError;
+        scheduleDraw();
+        return;
+      }
+      const requestId = logoLoadRequestId;
+      const url = URL.createObjectURL(file);
+      uploadedLogoUrl = url;
+      isLogoLoading = true;
+      elLogoUploadStatus.textContent = "로고 불러오는 중…";
+      updateDownloadButton();
+      const img = new Image();
+      img.onload = () => {
+        if (requestId !== logoLoadRequestId) return;
+        uploadedLogoImg = img;
+        isLogoLoading = false;
+        elLogoUploadStatus.textContent = `로고 준비 완료 · ${img.naturalWidth} × ${img.naturalHeight}px`;
+        updateDownloadButton();
+        scheduleDraw();
+      };
+      img.onerror = () => {
+        if (requestId !== logoLoadRequestId) return;
+        clearUploadedLogo();
+        logoError = "로고를 불러오지 못했어. 다른 이미지 파일을 선택해줘.";
+        elLogoUploadStatus.textContent = logoError;
+        scheduleDraw();
+      };
+      img.src = url;
+      scheduleDraw();
+    }
+
+    function drawRightImage(layout) {
       const mode = elImageMode.value;
 
       if (mode === "character") {
         if (selectedCharImg && selectedCharImg.complete && selectedCharImg.naturalWidth > 0) {
-          drawContainTrimmedCharacter(selectedCharImg, CONFIG.characterBox);
+          drawContainTrimmedCharacter(selectedCharImg, layout.characterBox);
         }
         return;
       }
 
       if (mode === "photo") {
-        drawUploadedPhoto(uploadedPhotoImg, CONFIG.characterBox);
+        drawUploadedPhoto(uploadedPhotoImg, layout.characterBox);
       }
     }
 
@@ -1308,6 +1623,14 @@
     function collectValidationIssues() {
       const errors = [];
       const warnings = [];
+
+      if (templateError) {
+        errors.push({ field: elTemplateOptions.querySelector("input:checked"), message: templateError });
+      }
+
+      if (elLogoType.value === "custom" && !uploadedLogoImg) {
+        errors.push({ field: elLogoUpload, message: logoError || "직접 넣을 로고 파일을 선택해줘." });
+      }
 
       if (!elName.value.trim()) {
         errors.push({ field: elName, message: "이름을 입력해줘." });
@@ -1359,25 +1682,59 @@
     }
 
     function drawCard() {
-      if (!templateImg.complete) return;
+      if (!appReady || isTemplateLoading || templateError || !templateImg?.naturalWidth) return;
 
+      lastOverflowFields = renderCard(canvas);
+      syncMobilePreview();
+      renderEditorMessages();
+    }
+
+    // Preview and export share coordinates and layout. Text and source images
+    // are drawn at the target resolution instead of enlarging a preview bitmap.
+    function renderCard(targetCanvas) {
+      const previousCtx = ctx;
+      ctx = targetCanvas.getContext("2d");
+      ctx.save();
+      try {
+        ctx.setTransform(targetCanvas.width / canvas.width, 0, 0, targetCanvas.height / canvas.height, 0, 0);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        return drawCardContent();
+      } finally {
+        ctx.restore();
+        ctx = previousCtx;
+      }
+    }
+
+    function drawCardContent() {
+      const layout = getTemplate().layout;
       const hasWork = elWork.value.trim().length > 0;
-      const teamConfig = hasWork ? CONFIG.teamWithWork : CONFIG.teamWithoutWork;
-      const addressConfig = hasWork ? CONFIG.addressWithWork : CONFIG.addressWithoutWork;
+      const teamConfig = hasWork ? layout.teamWithWork : layout.teamWithoutWork;
+      let addressConfig = hasWork ? layout.addressWithWork : layout.addressWithoutWork;
+      const imageBox = layout.characterBox;
+      const hasRightImage = elImageMode.value === "character"
+        ? Boolean(selectedCharImg?.naturalWidth)
+        : elImageMode.value === "photo" && Boolean(uploadedPhotoImg?.naturalWidth);
+      // Gold's address area extends into the portrait area in the manifest.
+      // Apply the existing shrink/ellipsis safety within the available space.
+      if (selectedTemplateId !== "default" && hasRightImage &&
+          addressConfig.y < imageBox.y + imageBox.h &&
+          addressConfig.y + addressConfig.startSize * 1.45 > imageBox.y &&
+          addressConfig.x < imageBox.x) {
+        addressConfig = {
+          ...addressConfig,
+          maxWidth: Math.min(addressConfig.maxWidth, imageBox.x - addressConfig.x - 24)
+        };
+      }
       const textResults = [];
 
-      ctx.clearRect(0, 0, CONFIG.width, CONFIG.height);
-      ctx.drawImage(templateImg, 0, 0, CONFIG.width, CONFIG.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
-      drawLogo();
-      textResults.push(drawNameText(elName.value, CONFIG.name));
-
-      textResults.push(drawTextOneLine(
-        elTitle.value,
-        CONFIG.title,
-        getWeight(elBoldTitle.checked, 700, 400),
-        "title"
-      ));
+      drawLogo(layout);
+      const nameResult = drawNameText(elName.value, layout.name);
+      textResults.push(nameResult);
+      textResults.push(drawTitleBesideName(nameResult, layout));
 
       textResults.push(drawTextOneLine(
         elTeam.value,
@@ -1389,24 +1746,24 @@
       if (hasWork) {
         textResults.push(drawTextOneLine(
           elWork.value,
-          CONFIG.work,
+          layout.work,
           getWeight(elBoldWork.checked, 600, 400),
           "work"
         ));
       }
 
-      drawET();
+      drawET(layout.et);
 
       textResults.push(drawTextOneLine(
         elEmail.value,
-        CONFIG.email,
+        layout.email,
         getWeight(elBoldContact.checked, 700, 400),
         "email"
       ));
 
       textResults.push(drawTextOneLine(
         elPhone.value,
-        CONFIG.phone,
+        layout.phone,
         getWeight(elBoldContact.checked, 700, 400),
         "phone"
       ));
@@ -1418,12 +1775,10 @@
         "address"
       ));
 
-      drawRightImage();
-      lastOverflowFields = textResults
+      drawRightImage(layout);
+      return textResults
         .filter(result => result?.overflow)
         .map(result => result.fieldKey);
-      syncMobilePreview();
-      renderEditorMessages();
     }
 
     function refreshCharacterOptions(keepFile = null) {
@@ -1567,6 +1922,9 @@
     }
 
     function updateRangeLabels() {
+      document.getElementById("logoOffsetXValue").textContent = elLogoOffsetX.value;
+      document.getElementById("logoOffsetYValue").textContent = elLogoOffsetY.value;
+      document.getElementById("logoScaleValue").textContent = elLogoScale.value;
       elNameOffsetXValue.textContent = elNameOffsetX.value;
       elNameOffsetYValue.textContent = elNameOffsetY.value;
       elNameScaleValue.textContent = elNameScale.value;
@@ -1632,7 +1990,7 @@
     }
 
     async function downloadPNG() {
-      if (isDownloading) return;
+      if (isDownloading || !appReady || isTemplateLoading || templateError || (elLogoType.value === "custom" && isLogoLoading)) return;
 
       flushScheduledDraw();
 
@@ -1659,10 +2017,7 @@
         outputCanvas.width = exportWidth;
         outputCanvas.height = exportHeight;
 
-        const outputCtx = outputCanvas.getContext("2d");
-        outputCtx.imageSmoothingEnabled = true;
-        outputCtx.imageSmoothingQuality = "high";
-        outputCtx.drawImage(canvas, 0, 0, exportWidth, exportHeight);
+        renderCard(outputCanvas);
 
         const blob = await canvasToBlob(outputCanvas);
         const objectUrl = URL.createObjectURL(blob);
@@ -1681,7 +2036,7 @@
         alert("PNG를 만들지 못했어. 잠시 후 다시 시도해줘.");
       } finally {
         isDownloading = false;
-        elDownloadBtn.disabled = false;
+        updateDownloadButton();
         elDownloadBtn.textContent = "PNG 다운로드";
         elDownloadBtn.removeAttribute("aria-busy");
       }
@@ -1689,7 +2044,13 @@
 
     function getEditorState() {
       return JSON.stringify({
+        templateId: selectedTemplateId,
         logoType: elLogoType.value,
+        logoOffsetX: elLogoOffsetX.value,
+        logoOffsetY: elLogoOffsetY.value,
+        logoScale: elLogoScale.value,
+        logoColor: elLogoColor.value,
+        hasLogo: Boolean(uploadedLogoUrl),
         name: elName.value,
         title: elTitle.value,
         team: elTeam.value,
@@ -1733,7 +2094,14 @@
     }
 
     function resetDefaults() {
+      selectTemplate("default");
       elLogoType.value = "erica";
+      clearUploadedLogo();
+      elLogoOffsetX.value = 0;
+      elLogoOffsetY.value = 0;
+      elLogoScale.value = 100;
+      elLogoColor.value = "auto";
+      updateLogoUI();
 
       elName.value = "하냥이";
       elTitle.value = "귀여움";
@@ -1785,7 +2153,16 @@
         element.addEventListener("change", scheduleDraw);
       });
 
-      elLogoType.addEventListener("change", scheduleDraw);
+      elLogoType.addEventListener("change", updateLogoUI);
+      elLogoUpload.addEventListener("change", handleLogoUpload);
+      elLogoColor.addEventListener("change", scheduleDraw);
+      document.getElementById("resetLogoPlacement").addEventListener("click", () => {
+        elLogoOffsetX.value = 0;
+        elLogoOffsetY.value = 0;
+        elLogoScale.value = 100;
+        updateRangeLabels();
+        scheduleDraw();
+      });
       elImageMode.addEventListener("change", updateImageModeUI);
 
       elCategory.addEventListener("change", () => {
@@ -1802,6 +2179,9 @@
       elPhotoShape.addEventListener("change", scheduleDraw);
 
       [
+        elLogoOffsetX,
+        elLogoOffsetY,
+        elLogoScale,
         elNameOffsetX,
         elNameOffsetY,
         elNameScale,
@@ -1835,6 +2215,7 @@
       window.addEventListener("resize", scheduleDraw);
 
       window.addEventListener("beforeunload", () => {
+        if (uploadedLogoUrl) URL.revokeObjectURL(uploadedLogoUrl);
         if (uploadedPhotoUrl) {
           URL.revokeObjectURL(uploadedPhotoUrl);
         }
@@ -1842,29 +2223,30 @@
     }
 
     async function init() {
+      document.querySelector(".version-badge").textContent = APP_VERSION;
+      renderTemplateOptions();
       bindEvents();
       refreshCharacterOptions();
       updateRangeLabels();
       updateImageModeUI();
 
-      templateImg.src = "assets/template.png";
+      defaultEditorState = getEditorState();
 
-      await new Promise((resolve, reject) => {
-        templateImg.onload = resolve;
-        templateImg.onerror = reject;
-      });
-
-      logoImages.erica = await loadImage(CONFIG.logos.erica.src);
-      logoImages.hanyang = await loadImage(CONFIG.logos.hanyang.src);
-
-      await updateCharacterAndDraw();
+      await Promise.all([
+        selectTemplate("default"),
+        ...Object.entries(CARD_TEMPLATES.default.layout.logos).map(async ([type, logo]) => {
+          logoImages[type] = await loadImage(logo.src);
+        }),
+        updateCharacterAndDraw()
+      ]);
 
       if (document.fonts?.ready) {
         await document.fonts.ready;
       }
 
+      appReady = true;
+      updateDownloadButton();
       flushScheduledDraw();
-      defaultEditorState = getEditorState();
     }
 
     init().catch(err => {
